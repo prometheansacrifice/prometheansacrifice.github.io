@@ -1,0 +1,42 @@
+---
+layout: post
+title: Running Perl CGI scripts
+date: 2013-12-07 18:53:56.000000000 +05:30
+categories:
+- Misc
+tags: []
+status: publish
+type: post
+published: true
+meta:
+  _publicize_pending: '1'
+  _edit_last: '43679539'
+author: 
+---
+<section>
+<div>
+<h3>Common Gateway Interface</h3>
+<p>CGI is an interface which tells the web server how to pass data back and forth to and from an application. Its allows rendering of dynamic web pages. Files requested from the special cgi-bin directory should not simply be read and sent, but instead should be<strong> executed.</strong></p>
+<h3 id="installation">Installation</h3>
+<p>CGI is actually a program called by the web server. This means a web server must be installed to run CGI scripts. In this post I assume you have installed Apache as your web server. Instructions to install Apache may be found <a title="here" href="http://www.linuxcandy.com/2012/05/how-to-install-lamp-in-ubuntu-12-04-precise-pangolin.html#comment-313" target="_blank">here</a></p>
+<p>Inorder to run CGI scripts, Apache must be configured to allow CGI execution. More info <a href="http://httpd.apache.org/docs/2.2/howto/cgi.html">here</a></p>
+<p>Open the configuration file <code>default</code> in <code>/etc/apache2/sites-available/</code></p>
+<p>[code language="javascript"]sudo gedit /etc/apache2/sites-available/default<br />
+[/code]</p>
+<p>Search for the keyword <code>ScriptAlias</code> (Use Ctrl + F)<br />
+You should see an entry like this</p>
+<p>[code language="javascript"]ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/<br />
+&lt;Directory &quot;/usr/lib/cgi-bin&quot;&gt;<br />
+    AllowOverride None<br />
+    Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch<br />
+    Order allow,deny<br />
+    Allow from all<br />
+&lt;/Directory&gt;<br />
+[/code]</p>
+<p>This mean Apache has been configured to execute scripts from <code>/usr/lib/cgi-bin/</code></p>
+<p>Place your files in this directory and give execute permissions for the web server.</p>
+<p>[code language="javascript"]sudo chmod a+x filename.pl<br />
+[/code]</p>
+<p>Enter the url as <a href="http://localhost/cgi-bin/filename.pl">http://localhost/cgi-bin/filename.pl</a> as see the results.</p>
+</div>
+</section>

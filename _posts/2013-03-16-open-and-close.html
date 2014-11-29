@@ -1,0 +1,110 @@
+---
+layout: post
+title: open() and close()
+date: 2013-03-16 17:00:44.000000000 +05:30
+categories:
+- Unix System Programming
+tags:
+- files
+- system
+- system calls
+- unix
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '43679539'
+  _publicize_pending: '1'
+author: 
+---
+<p>Any kind of file manipulation requires the use of open() and close(). open() returns a file descriptor that the program can use to identify the file. Using the same file descriptor we the close the file using close().</p>
+<h3>open()</h3>
+<p>[sourcecode language="C"]<br />
+#include &lt;sys/types.h&gt;<br />
+#include &lt;fcntl.h&gt;</p>
+<p>int open(const char *path,int access_mode,mode_t permission);<br />
+[/sourcecode]</p>
+<table border="1">
+<tr>
+<td> <b> Access mode flag </b> </td>
+<td> <b> Description </b> </td>
+</tr>
+<tr>
+<td>
+O_RDONLY
+</td>
+<td>
+Opens the file in read-only mode
+</td>
+</tr>
+<tr>
+<td>
+O_WRONLY
+</td>
+<td>
+Opens the file in write-only mode
+</td>
+</tr>
+<tr>
+<td>
+O_RDWR
+</td>
+<td>
+Opens the file in both read and write mode
+</td>
+</tr>
+<tr>
+<td>
+O_APPEND
+</td>
+<td>
+Writes to the end of the file
+</td>
+</tr>
+<tr>
+<td>
+O_CREAT
+</td>
+<td>
+Create the file <b> if it doesnot exist<br />
+</b></td>
+</tr>
+<tr>
+<td>
+O_EXCL
+</td>
+<td>
+Usually with O_CREAT, causes open to fail if the named file already exists
+</td>
+</tr>
+<tr>
+<td>
+O_TRUNC
+</td>
+<td>
+Overwrite the existing file
+</td>
+</tr>
+</table>
+<p>Specifying file permissions are optional and are covered in detail in the next  <a href="http://prometheansacrifice.wordpress.com/2013/03/15/file-permissions-and-umask" title="post" target="_blank">post</a> </p>
+<p>[sourcecode language="C"]<br />
+#include &lt;iostream&gt;<br />
+#include &lt;fcntl.h&gt;</p>
+<p>using namespace std;</p>
+<p>int main()<br />
+{<br />
+    int fd;<br />
+    char buf[10] = &quot;Data&quot;;<br />
+    fd = open(&quot;File.data&quot;,O_WRONLY | O_CREAT | O_TRUNC);<br />
+    if(fd &lt; 0)<br />
+    {<br />
+        return -1;<br />
+    }</p>
+<p>    if(write(fd,buf,10) &lt; 0)<br />
+    {<br />
+        return -1;<br />
+    }</p>
+<p>    close(fd);<br />
+    return 0;<br />
+}</p>
+<p>[/sourcecode]</p>

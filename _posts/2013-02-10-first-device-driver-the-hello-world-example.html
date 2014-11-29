@@ -1,0 +1,109 @@
+---
+layout: post
+title: First Device Driver – The 'hello world' example
+date: 2013-02-10 07:43:32.000000000 +05:30
+categories:
+- Misc
+tags: []
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '43679539'
+  _publicize_pending: '1'
+author: 
+---
+<p>[sourcecode language="C"]<br />
+#include &lt;linux/module.h&gt;<br />
+#include &lt;linux/kernel.h&gt;</p>
+<p>static int __init driver_init(void)<br />
+{<br />
+	printk(KERN_INFO &quot;Hello World&quot;);<br />
+	return 0;<br />
+}</p>
+<p>static void __exit driver_exit(void)<br />
+{<br />
+	printk(KERN_INFO &quot;Goodbye&quot;);<br />
+}</p>
+<p>module_init(driver_init);<br />
+module_exit(driver_exit);</p>
+<p>MODULE_LICENSE(&quot;GPL&quot;);<br />
+MODULE_AUTHOR(&quot;freethinker667@gmail.com&quot;);<br />
+MODULE_DESCRIPTION(&quot;A Simple Device Driver&quot;);<br />
+[/sourcecode]</p>
+<p>[sourcecode gutter="false"]<br />
+	#include &lt;linux/module.h&gt;<br />
+	#include &lt;linux/init.h&gt;<br />
+[/sourcecode]<br />
+These header files are mandatory for all loadable modules. <tt>module.h </tt> contains the definitions and symbols that loadables modules need. <tt> kernel.h </tt> hasAdd <tt>  </tt> if any compilation errors show up.  <tt>init.h </tt> is used to specify the initialisation and clean up functions. Some tutorials have suggested this header file, though my system showed no errors without it.</p>
+<p>[sourcecode gutter="false"]<br />
+static int __init driver_init(void)<br />
+{<br />
+	printk(KERN_INFO &quot;Hello World&quot;);<br />
+	return 0;<br />
+}<br />
+[/sourcecode]<br />
+<tt>driver_init</tt> is a static function prefixed with __init.<br />
+__init is a macro that tells the linker that <tt>driver_init</tt> is to be placed in separate section of the object file so that once used these items can be deleted. <tt> driver_init </tt> is called only once and no other function will call this function.</p>
+<p><a href="http://stackoverflow.com/questions/11680641/init-and-exit-macros-usage-for-built-in-and-loadable-modules"> Check out this StackOverflow question </a> </p>
+<pre>
+I was reading about linux kernel development and I just read some text that I don't 
+understand. Here is the paragraph, which talks about the __init and __exit macros 
+for modules:
+
+"This demonstrates a feature of kernel 2.2 and later. Notice the change in the definitions
+of the init and cleanup functions. The __init macro causes the init function to be discarded 
+and its memory freed once the init function finishes for built−in drivers, but not loadable 
+modules. If you think about when the init function is invoked, this makes perfect sense.
+
+There is also an __initdata which works similarly to __init but for init variables rather 
+than functions.
+
+The __exit macro causes the omission of the function when the module is built into the kernel,
+ and like __exit, has no effect for loadable modules. Again, if you consider when the cleanup 
+function runs"
+
+I get the point; the macro __init causes the init function to be discarded and its memory 
+freed once the init function finishes for built-in drivers. But why? not for loadable modules? 
+I couldn't make sense of it.
+
+Why for built-in driver but not for loadable modules? Variables, addresses etc assigned in
+ __init would be required for the both, right?
+
+Answer :
+You're right; even in a module there could be functions that you really don't need after 
+initialization, and so they could in principle be removed from memory. The reason __init 
+has no effect for modules is more about how easy it would be to implement.
+
+Essentially, the kernel build system looks for all of the functions flagged with __init, 
+across all of the pieces of the kernel, and arranges them so that they will all be in the 
+same block of memory.
+
+Then, when the kernel boots, it can free that one block of memory all at once.
+
+This pre-sorting idea doesn't work so well with modules. The init code has to be loaded 
+when the module is loaded, so it can't share space with other init code. Instead, the kernel
+ would have to pick a few hundred bytes out of each module and free them individually.
+
+However, hardware page sizes are typically 4KB, so it's hard to free up memory in chunks 
+of less than that. So trying to free the __init functions in each individual module is probably
+ more trouble than it's worth.
+</pre>
+<p>Linux Device Driver [3rd edition] by Jonathan Corbet, Alessandro<br />
+ Rubini, and Greg Kroah-Hartman<br />
+ says : </p>
+<pre>
+The use of module_init is mandatory. This macro adds a special 
+section to the module's object code stating where the module's 
+initialization function is to be found. Without this definition,
+your initialization function is never called.
+
+The cleanup function has no value to return, so it is declared 
+void. The _ _exit modifier marks the code as being for module 
+unload only (by causing the compiler to place it in a special 
+ELF section). If your module is built directly into the kernel, or if your kernel is configured to 
+disallow the unloading of modules, functions marked _ _exit are simply discarded. For this reason,
+ a function marked _ _exit can be called only at module unload or system shutdown time; any other 
+use is an error. Once again, the module_exit declaration is necessary to enable to kernel to find 
+your cleanup function.
+</pre>

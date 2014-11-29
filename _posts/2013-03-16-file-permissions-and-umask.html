@@ -1,0 +1,135 @@
+---
+layout: post
+title: File permissions and umask()
+date: 2013-03-16 17:52:04.000000000 +05:30
+categories:
+- Unix System Programming
+tags:
+- file permissions
+- system programming
+- umask
+- unix
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '43679539'
+  _publicize_pending: '1'
+author: 
+---
+<p>Access permissions can be specified during creation of files.<br />
+[sourcecode language="C"]<br />
+#include &lt;iostream&gt;<br />
+#include &lt;fcntl.h&gt;<br />
+using namespace std;<br />
+int main()<br />
+{<br />
+    int fd;<br />
+    char buf[10] = &quot;Data&quot;;<br />
+    fd = open(&quot;File.data&quot;,O_WRONLY | O_CREAT | O_TRUNC);<br />
+    if(fd &lt; 0)<br />
+    {<br />
+        return -1;<br />
+    }<br />
+    if(write(fd,buf,10) &lt; 0)<br />
+    {<br />
+        return -1;<br />
+    }<br />
+    close(fd);<br />
+    return 0;<br />
+}<br />
+[/sourcecode]<br />
+The above code creates a file with default permission : execute permissions for writer (permissions could very well depend on the system).<br />
+Unix, as we know, allows three kinds of file access mainly : own</p>
+<table border="1">
+<tr>
+<td>S_IRUSR </td>
+<td>Read permission, owner</td>
+</tr>
+<tr>
+<td>S_IWUSR</td>
+<td>Write permission, owner </td>
+</tr>
+<tr>
+<td>S_IXUSR</td>
+<td>Execute permission, owner </td>
+</tr>
+<tr>
+<td>S_IRGRP</td>
+<td>Read permission, group </td>
+</tr>
+<tr>
+<td>S_IWGRP</td>
+<td>Write permission, group </td>
+</tr>
+<tr>
+<td>S_IXGRP</td>
+<td>Execute permission, group
+</td>
+</tr>
+<tr>
+<td>S_IROTH</td>
+<td>Read permission, others </td>
+</tr>
+<tr>
+<td>S_IWOTH</td>
+<td>Write permission, others </td>
+</tr>
+<tr>
+<td>S_IXOTH</td>
+<td>Execute permission, others </td>
+</tr>
+<table>
+In addition, we also have S_IRWXU,S_IRWXG and S_IRWXO.</p>
+<h3> umask </h3>
+<p>In practise, no matter what access permissions are specified, every file permission value specified is modified by the calling process umask value. A <i>umask</i> specifies some access rights to be <b> taken away </b>. This value is inherited from the parent proces, and can be modified or queried using the <b> umask() </b> system call.<br />
+[sourcecode language="C"]<br />
+#include &lt;sys/stat.h&gt;<br />
+mode_t umask(mode_t new_mask);<br />
+[/sourcecode]<br />
+The following code demonstrates file permissions and umask().<br />
+[sourcecode language="C"]<br />
+#include &lt;iostream&gt;<br />
+#include &lt;fcntl.h&gt;<br />
+#include &lt;sys/types.h&gt;<br />
+#include &lt;sys/stat.h&gt;<br />
+#include &lt;unistd.h&gt;<br />
+using namespace std;<br />
+int main()<br />
+{<br />
+    int fd1,fd2;<br />
+    char buf[10] = &quot;Data&quot;;<br />
+    fd1 = open(&quot;File1.data&quot;,O_WRONLY | O_CREAT | O_TRUNC,S_IRWXU | S_IRWXG | S_IRWXO); // to all<br />
+    if(fd1 &lt; 0)<br />
+    {<br />
+        return -1;<br />
+    }<br />
+    if(write(fd1,buf,10) &lt; 0)<br />
+    {<br />
+        return -1;<br />
+    }<br />
+    cout &lt;&lt; &quot;umask of this process before umask() : &quot; &lt;&lt; umask(0) &lt;&lt; endl;<br />
+    fd2 = open(&quot;File2.data&quot;,O_WRONLY | O_CREAT | O_TRUNC,S_IRWXU | S_IRWXG | S_IRWXO); // to all again<br />
+    if(fd2 &lt; 0)<br />
+    {<br />
+        return -1;<br />
+    }<br />
+    if(write(fd2,buf,10) &lt; 0)<br />
+    {<br />
+        return -1;<br />
+    }<br />
+    cout &lt;&lt; &quot;umask of this process before umask() : &quot; &lt;&lt; umask(0) &lt;&lt; endl;<br />
+    close(fd1);<br />
+    close(fd2);<br />
+    return 0;<br />
+}<br />
+[/sourcecode]<br />
+Compile the above and run the following commands<br />
+[sourcecode language="bash"]<br />
+ls -l File1.data<br />
+[/sourcecode]<br />
+[sourcecode language="bash"]<br />
+ls -l File2.data<br />
+[/sourcecode]<br />
+</table>
+</table>

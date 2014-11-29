@@ -1,0 +1,19 @@
+---
+layout: post
+title: Differences between Driver modules and User Applications
+date: 2013-02-10 08:33:57.000000000 +05:30
+categories:
+- Misc
+tags: []
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '43679539'
+  _publicize_pending: '1'
+author: 
+---
+<p>User applications, when run, perform all the tasks they are meant to do until all the services requested are met. Driver modules, on the other hand, do nothing but simply register themselves with the kernel and simply inform their presence and functionalities.</p>
+<p>User applications can be lazy to release resources or perform other kinds of cleaning up : the host OS would take care of this once the program exits. Unlike user apps, driver modules must ensure clean all the mess it created. Allocated memory or changes in any kind of configuration could remain until the system is rebooted.</p>
+<p>User applications can link to libraries at the run time. The only libraries that a module can link to are the kernel libraries. Hence, use of functions like printf() (which requires libc) are prohibited. printk() provided by the kernel libraries is used instead.</p>
+<p> Error handling is easier when encountered in user application development: a segmentation fault is taken care of by the OS and a debugger can point out how and what happened. Kernel faults can lead to the crashing of the whole system</p>

@@ -1,0 +1,44 @@
+---
+layout: post
+title: Tagged initialisation of structures in C
+date: 2013-03-16 17:56:38.000000000 +05:30
+categories:
+- Misc
+tags:
+- advanced C
+- C
+- structures
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '43679539'
+  _publicize_pending: '1'
+author: 
+---
+<p>Aggregate initializers (initializers in {}) in the specifications according to C89/90,required the programmer to supply an individual initializer for each structure member in order, beginning with the first.</p>
+<pre>
+For example :
+struct A 
+{ 
+	int a, b, c, d; 
+};
+
+struct A s = { 1, 2, 3, 4 };
+/* 1 for s.a, 2 for s.b and so on... */
+</pre>
+<p>It was necessary to specify initializers for all members, i.e. you can stop at any time (remaining members will be zero-initialized). If for some reason only third member of the structure was to be initialised explicitly, you had no other choice but to supply a "dummy" explicit initializer for the first and the second members (just to get to the desired third)</p>
+<pre>
+/* We only care to explicitly initialize s.c */
+struct A s = { 0, 0, 3 };
+/* and we have no choice but to explicitly initialize s.a and s.b as well */
+</pre>
+<p>The new specification of C language (C99) allows the use of "tagged" initializers by supplying the desired member name within the {}<br />
+struct A s = { .c = 3 };</p>
+<p>That desired member(s) can be explicitly initialised (and ask the compiler to implicitly zero-initialize the rest).</p>
+<p>This not only saves some typing but also makes the aggregate independent from the order in which the members are declared in the struct.</p>
+<p>Aggregate initializers can be used with arrays too.</p>
+<pre>
+int a[10] = { [5] = 3 };
+</pre>
+<p>If an explicit initializer is specifies for just one (or some) member of a struct or an array, the whole aggregate (struct or array) gets initialized, and the members without explicit initializers get zero-initialized.</p>

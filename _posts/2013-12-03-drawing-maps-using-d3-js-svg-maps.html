@@ -1,0 +1,179 @@
+---
+layout: post
+title: Drawing Maps using D3.js - svg maps
+date: 2013-12-03 13:09:23.000000000 +05:30
+categories:
+- d3.js
+tags:
+- d3.js svg maps
+status: publish
+type: post
+published: true
+meta:
+  _publicize_pending: '1'
+  _edit_last: '43679539'
+author: 
+---
+<p>And so I decide to create maps using d3.js using this <a href="http://www.schneidy.com/Tutorials/MapsTutorial.html">tutorial</a>. The tutorial creates a map of NYC - me I wanted the state of karnataka where I live.</p>
+<p>The first piece of code illustrates creating maps using SVG maps.</p>
+<p>[code language="javascript" gutter="false"]<br />
+var length = 300;<br />
+var width = 350;</p>
+<p>var svg = d3.select('body').append('svg')<br />
+.attr('width', width))<br />
+.attr('height', height);<br />
+var group = svg.append('g');</p>
+<p>var NYPath = &quot;M7.0371 120.844l-0.6373 11.9674 … -1.0232 0.1923z”;</p>
+<p>var ny = group.append('path')<br />
+.attr('d', NYPath)<br />
+.style('fill', 'grey')<br />
+.style('stroke', 'black')<br />
+.style('stroke-width', 1);</p>
+<p>[/code]</p>
+<p>SVG maps made up of paths as it reads. So I go and download the SVG map of NYC and Karnataka. Little did I know SVG maps don't simply contain paths - they hold all kinds of data about the map in a standard xml document. Time to dig into XML docs and write a parser for ourselves - obviously no one wants to sit and copy paste paths manually. Besides SVG maps tend to have other info like the height and width of the doc which is needed too.</p>
+<h2 id="enterdragonummxmlparser">Enter dragon..umm XML parser</h2>
+<p>Another request goes to the Google servers. This time I'm interested in <a href="http://www.hiteshagrawal.com/javascript/javascript-xml-parsing-on-mozilla-firefox-opera-browsers">this</a> link. I try the code out</p>
+<p><img alt="" src="assets/firebug_xml_load.png" /></p>
+<p>Looking up...</p>
+<p>I reach <a href="http://www.w3schools.com/xml/xml_parser.asp">here</a>. Further documentation <a href="http://www.w3schools.com/dom/dom_http.asp">here</a></p>
+<p>The same example code updated would look like this:</p>
+<p>[code language="javascript" gutter="false"]    if (window.XMLHttpRequest){<br />
+        // code for IE7+, Firefox, Chrome, Opera, Safari<br />
+        xmlhttp=new XMLHttpRequest();<br />
+    }<br />
+    else {<br />
+        // code for IE6, IE5<br />
+        xmlhttp=new ActiveXObject(&quot;Microsoft.XMLHTTP&quot;);<br />
+    }<br />
+    xmlhttp.open(&quot;GET&quot;,&quot;employee.xml&quot;,false);<br />
+    xmlhttp.send();<br />
+    if (xmlhttp.readyState == XMLHttpRequest.DONE) {<br />
+        xmlDoc=xmlhttp.responseXML;</p>
+<p>        // alert(&quot;XML Root Tag Name: &quot; + xmlDoc.documentElement.tagName);<br />
+        console.log(&quot;XML Root Tag Name: &quot; + xmlDoc.documentElement.tagName);</p>
+<p>        //Using nodeValue and Attributes Properties<br />
+        //Here both the statement will return you the same result<br />
+        //Output 001<br />
+        // alert(&quot;Node Value: &quot; + xmlDoc.documentElement.childNodes[1].attributes[0].nodeValue);<br />
+        console.log(&quot;Node Value: &quot; + xmlDoc.documentElement.childNodes[1].attributes[0].nodeValue);</p>
+<p>        // alert(&quot;Node Value: &quot; + xmlDoc.documentElement.childNodes[1].attributes.getNamedItem(&quot;id&quot;).nodeValue);<br />
+        console.log(&quot;Node Value: &quot; + xmlDoc.documentElement.childNodes[1].attributes.getNamedItem(&quot;id&quot;).nodeValue);</p>
+<p>        //Using getElementByTagName Properties<br />
+        //Here both the statement will return you the same result<br />
+        //Output 2000<br />
+        // alert(&quot;getElementsByTagName: &quot; + xmlDoc.getElementsByTagName(&quot;year&quot;)[0].attributes.getNamedItem(&quot;id&quot;).nodeValue);<br />
+        console.log(&quot;getElementsByTagName: &quot; + xmlDoc.getElementsByTagName(&quot;year&quot;)[0].attributes.getNamedItem(&quot;id&quot;).nodeValue);</p>
+<p>        //Using text Properties<br />
+        //Output John<br />
+        // alert(&quot;Text Content for Employee Tag: &quot; + xmlDoc.documentElement.childNodes[1].textContent);<br />
+        console.log(&quot;Text Content for Employee Tag: &quot; + xmlDoc.documentElement.childNodes[1].textContent);<br />
+    }<br />
+[/code]</p>
+<h3 id="writingtheparser">Writing the parser</h3>
+<p>The svg map of Karnataka has a group of paths drawing the other states</p>
+<p>[code language="html" gutter="false"]<br />
+&lt;g id=&quot;other_state&quot;&gt;<br />
+         &lt;g id=&quot;g67&quot;&gt;<br />
+            &lt;path d=&quot;M873.09,2358 ...<br />
+         &lt;/g&gt;<br />
+         .<br />
+         .<br />
+         .<br />
+&lt;/g&gt;;<br />
+[/code]</p>
+<p>Lets try to draw these paths. The d3 code would now look like:</p>
+<p>[code language="javascript"]/**<br />
+* Code to pare the d attribute form the SVG map of Karnataka<br />
+*/<br />
+$('#viz-container').html('&amp;lt;button type=&quot;button&quot; id=&quot;next&quot;&amp;gt;Next&amp;lt;/button&amp;gt;');<br />
+var Districts = [<br />
+'Bidar',<br />
+'Yadgir',<br />
+'Gulbarga',<br />
+'Belgaum',<br />
+'Bellary',<br />
+'Chikballapur',<br />
+'Kolar',<br />
+'Chikmangaluru',<br />
+'Hassan',<br />
+'Ramnagara',<br />
+'Bangalore Rural',<br />
+'Bangalore Urban',<br />
+'Mandya',<br />
+'Kodagu',<br />
+'Tumkur',<br />
+'Raichur',<br />
+'Koppal',<br />
+'Bagalkot',<br />
+'Bijapur',<br />
+'Dharwad',<br />
+'Haveri',<br />
+'Gadag',<br />
+'DK',<br />
+'Mysore',<br />
+'Chamrajnagar',<br />
+'Shimoga',<br />
+'Davangere',<br />
+'Chitradurga',<br />
+'N Canara',<br />
+'Udupi'<br />
+];<br />
+var tooltip = d3.select(&quot;body&quot;)<br />
+    .append(&quot;div&quot;).attr(&quot;id&quot;, &quot;pyk-bubble-tooltip&quot;)<br />
+    .style(&quot;position&quot;, &quot;absolute&quot;)<br />
+    .style(&quot;z-index&quot;, &quot;10&quot;)<br />
+    .style(&quot;visibility&quot;, &quot;hidden&quot;)<br />
+    .style(&quot;background&quot;, &quot;#fff&quot;)<br />
+    .style(&quot;padding&quot;, &quot;10px 20px&quot;)<br />
+    .style(&quot;box-shadow&quot;, &quot;0 0 10px #000&quot;)<br />
+    .style(&quot;border-radius&quot;, &quot;5px&quot;)<br />
+    .text(&quot;a simple tooltip&quot;);</p>
+<p>var svg = d3.select('body').append('svg')<br />
+var group = svg.append('g');</p>
+<p>if (window.XMLHttpRequest){<br />
+    // code for IE7+, Firefox, Chrome, Opera, Safari<br />
+    xmlhttp=new XMLHttpRequest();<br />
+}<br />
+else {<br />
+    // code for IE6, IE5<br />
+    xmlhttp=new ActiveXObject(&quot;Microsoft.XMLHTTP&quot;);<br />
+}<br />
+xmlhttp.open(&quot;GET&quot;,&quot;maps/kmap.svg&quot;,false);<br />
+xmlhttp.send();<br />
+xmlDoc=xmlhttp.responseXML;</p>
+<p>var h = xmlDoc.getElementsByTagName('svg')[0].getAttribute('height');<br />
+var w = xmlDoc.getElementsByTagName('svg')[0].getAttribute('width');<br />
+svg.attr('width', w)<br />
+    .attr('height', h);</p>
+<p>var node = xmlDoc.getElementById('ka');<br />
+var districtPaths = [];<br />
+var nodes = node.getElementsByTagName('path')<br />
+for(var i = 0; i &amp;lt; nodes.length; ++i) {<br />
+    districtPaths[i] = nodes[i].getAttribute('d');<br />
+}<br />
+console.log(districtPaths);</p>
+<p>var ny = group<br />
+    .selectAll('path')<br />
+    .data(districtPaths)<br />
+    .enter()<br />
+    .append('path')<br />
+    .attr('d', function (d, i) {<br />
+        return d;<br />
+    })<br />
+    .attr('id', function (d, i){<br />
+        return i;<br />
+    })<br />
+    .style('fill', 'grey')<br />
+    .style('stroke', 'black')<br />
+    .style('stroke-width', 1)<br />
+    .attr('transform', 'scale(0.2)')<br />
+    .on(&quot;mouseover&quot;, function (d, i) {<br />
+        return tooltip.html(Districts[i]).style(&quot;visibility&quot;, &quot;visible&quot;);<br />
+    })<br />
+    .on(&quot;mousemove&quot;, function () {<br />
+        return tooltip.style(&quot;top&quot;, (d3.event.pageY - 10) + &quot;px&quot;).style(&quot;left&quot;, (d3.event.pageX + 10) + &quot;px&quot;);<br />
+    })<br />
+    .on(&quot;mouseout&quot;, function () {<br />
+        return tooltip.style(&quot;visibility&quot;, &quot;hidden&quot;);<br />
+    })<br />
+[/code]</p>

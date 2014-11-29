@@ -1,0 +1,36 @@
+---
+layout: post
+title: 'OpenSSH: sshd won''t start !'
+date: 2014-03-30 13:11:23.000000000 +05:30
+categories: []
+tags: []
+status: publish
+type: post
+published: true
+meta:
+  _publicize_pending: '1'
+  is_reblog: '1'
+  post_id: '510'
+  blog_id: '14377950'
+  reblog_snapshot: "O:8:\"stdClass\":7:{s:5:\"title\";s:27:\"OpenSSH: sshd won't start
+    !\";s:4:\"type\";s:4:\"post\";s:9:\"mime_type\";s:0:\"\";s:6:\"format\";b:0;s:12:\"modified_gmt\";s:19:\"2012-02-28
+    11:24:37\";s:9:\"permalink\";s:42:\"http://abi71.wordpress.com/2011/08/15/510/\";s:7:\"content\";s:1318:\"<div
+    class=\"reblogged-content\">Have a problem with sshd ? your sshd daemon won't
+    start ? oke gonna fix now <!--more-->!\r\n\r\nwhen I run sshd, a message appears:\r\n[sourcecode
+    language=\"bash\"]\r\nbash-4.1# sshd\r\nsshd re-exec requires execution with an
+    absolute path\r\n[/sourcecode]\r\n\r\nTry this:\r\n[sourcecode language=\"bash\"]\r\nbash-4.1#
+    whereis sshd\r\nsshd: /usr/sbin/sshd /usr/man/man8/sshd.8.gz /usr/share/man/man8/sshd.8.gz
+    /usr/X11/man/man8/sshd.8.gz\r\n[/sourcecode]\r\n\r\nYour sshd path at \"/usr/sbin/sshd\",
+    so type:\r\n[sourcecode language=\"bash\"]\r\nbash-4.1# /usr/sbin/sshd \r\n[/sourcecode]\r\n\r\nif
+    when running /usr/sbin/sshd appears a message like this:\r\n[sourcecode language=\"bash\"]\r\nbash-4.1#
+    /usr/sbin/sshd \r\nCould not load host key: /etc/ssh/ssh_host_rsa_key\r\nCould
+    not load host key: /etc/ssh/ssh_host_dsa_key\r\nDisabling protocol version 2.
+    Could not load host key\r\nsshd: no hostkeys available -- exiting.\r\n[/sourcecode]\r\n\r\nThe
+    problem because the host key doesn't exist, you must re-generate, do the following
+    ways:\r\n[sourcecode language=\"bash\"]\r\nbash-4.1# ssh-keygen -b 1024 -f /etc/ssh/ssh_host_key
+    -N \"\"\r\nbash-4.1# ssh-keygen -f /etc/ssh/ssh_host_dsa_key -N  \"\" \r\nbash-4.1#
+    ssh-keygen -f /etc/ssh/ssh_host_rsa_key -N \"\"\r\n[/sourcecode]\r\n\r\nNB: You
+    must have root privileges to perform a step above\r\n\r\nGood Luck :D !</div>\";}"
+author: 
+---
+

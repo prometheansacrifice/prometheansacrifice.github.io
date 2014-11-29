@@ -1,0 +1,24 @@
+---
+layout: post
+title: Bash Script to rename file extensions
+date: 2013-03-16 14:17:57.000000000 +05:30
+categories:
+- Misc
+tags:
+- bash
+- extensions
+- rename
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '43679539'
+  _publicize_pending: '1'
+author: 
+---
+<p>[sourcecode language="bash"]<br />
+#! /bin/bash<br />
+for file in `ls *$1`; do<br />
+    mv &quot;$file&quot; &quot;`basename $file $1`$2&quot;<br />
+done<br />
+[/sourcecode]</p>

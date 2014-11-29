@@ -1,0 +1,74 @@
+---
+layout: post
+title: creat() read() and write()
+date: 2013-03-16 14:18:31.000000000 +05:30
+categories:
+- Unix System Programming
+tags:
+- calls
+- read
+- system
+- unix
+- write
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '43679539'
+  _publicize_pending: '1'
+author: 
+---
+<h3> creat() </h3>
+<p><i>creat() </i> system call can be used to create regular files. </p>
+<p>[sourcecode language="C"]<br />
+#include &lt;sys/types.h&gt;<br />
+#include &lt;&gt;unistd.h&gt;</p>
+<p>int creat(const char *path,mode_t);</p>
+<p>[/sourcecode]</p>
+<p><i>creat()</i> has now become obsolete as open() can be used to do the same with O_CREAT. It is now implemented as follows :</p>
+<p>[sourcecode language="C"]<br />
+#define creat(path,mode) \<br />
+		open(path,O_WRONLY, | O_CREAT | O_TRUNC, mode)<br />
+[/sourcecode]</p>
+<h3>write()</h3>
+<p><i>write()</i> writes a fixed number of blocks of data into a file (referenced by a file descriptor).<br />
+[sourcecode language="C"]<br />
+#include &lt;iostream&gt;<br />
+#include &lt;fcntl.h&gt;<br />
+#include &lt;unistd.h&gt;<br />
+#include &lt;sys/types.h&gt;</p>
+<p>using namespace std;</p>
+<p>int main()<br />
+{<br />
+    char buf[10] = &quot;data...&quot;;<br />
+    cout &lt;&lt; &quot;Creating 'file'...\n&quot;;<br />
+    int fd = creat(&quot;file&quot;,S_IRWXU);<br />
+    cout &lt;&lt; &quot;Writing...\n&quot;;<br />
+    write(fd,buf,10);<br />
+    cout &lt;&lt; &quot;Closing...\n&quot;;<br />
+    close(fd);<br />
+    return 0;<br />
+}<br />
+[/sourcecode]</p>
+<h3>read()</h3>
+<p><i>read()</i> fetches a fixed number of blocks of data from a file (referenced by a file descriptor).</p>
+<p>[sourcecode language="C"]<br />
+#include &lt;iostream&gt;<br />
+#include &lt;unistd.h&gt;<br />
+#include &lt;sys/types.h&gt;<br />
+#include &lt;fcntl.h&gt;</p>
+<p>using namespace std;</p>
+<p>int main()<br />
+{<br />
+    char buf[10] = &quot;data...&quot;;<br />
+    int fd;<br />
+    cout &lt;&lt; &quot;Opening 'file'\n&quot;;<br />
+    fd = open(&quot;file&quot;,O_RDONLY);<br />
+    read(fd,buf,10);<br />
+    cout &lt;&lt; &quot;Contents:\n&quot;;<br />
+    cout &lt;&lt; buf;<br />
+    cout &lt;&lt; &quot;\nClosing...\n&quot;;<br />
+    close(fd);<br />
+    return 0;<br />
+}<br />
+[/sourcecode]</p>

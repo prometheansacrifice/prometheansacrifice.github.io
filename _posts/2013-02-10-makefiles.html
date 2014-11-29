@@ -1,0 +1,101 @@
+---
+layout: post
+title: Makefiles
+date: 2013-02-10 08:20:35.000000000 +05:30
+categories:
+- Misc
+tags: []
+status: publish
+type: post
+published: true
+meta:
+  _edit_last: '43679539'
+  _publicize_pending: '1'
+author: 
+---
+<p><tt>Makefiles</tt> are text files that contain rules for the make utility. make is a commandline utility to build executables and libraries from source code in a certain manner (defined in the <tt>Makefiles</tt>). Though <tt>Makefiles</tt> are widely used to create executables and libraries they are used pretty much for anything that involves a set of commands to transform a source file into a target result.Compilation of the linux kernel involves <tt>Makefiles</tt>. Since I use a GNU/Linux System, make utility I use is GNU make. And unless otherwise mentioned, make utilty I refer to is the GNU make itself. </p>
+<p>The make utility searches the current directory for the Makefile in the order <tt>GNUmakefile, makefile, Makefile</tt> and performs the operations specified in the file. </p>
+<p><tt>Makefiles</tt> simply have rules. Each rule contains a target and the components the target depends on. Hence rules are also called <i>dependency lines</i>.<br />
+Dependency lines are followed by commands that carry out the operations on the components to generate the target. Commands are always preceded by a TAB character.<br />
+[sourcecode language="text" gutter="false"]<br />
+target [target ...]: [component ...]<br />
+[&lt;TAB&gt;command 1]<br />
+       .<br />
+       .<br />
+       .<br />
+&lt;TAB&gt;command n]<br />
+[/sourcecode]<br />
+Every <tt>Makefile</tt> contains a default target "all" which is executed when no target is specified when invoking make.<br />
+After creating the <tt>Makefile</tt>, the make command can be used to compile the project.<br />
+[sourcecode language="bash"]<br />
+$ make<br />
+[/sourcecode]<br />
+Whenever make is invoked, first the components required to build the target are searched. If not found, a rule for creating the component is searched for. If both of these fail, error is flagged. Hence, if the components are already present, they are not created again. </p>
+<h4> Example </h4>
+<p>Consider building the following files :<br />
+[sourcecode language="C" collapse="true"]<br />
+/*** main.cpp ***/<br />
+#include &lt;iostream&gt;<br />
+#include &quot;functions.h&quot; </p>
+<p>using namespace std; </p>
+<p>int main()<br />
+{<br />
+    printtext();<br />
+    cout &lt;&lt; endl;<br />
+    cout &lt;&lt; &quot;Sum of 6 natural numbers is &quot; &lt;&lt; sumnatural(6) &lt;&lt; endl;<br />
+    return 0;<br />
+}<br />
+[/sourcecode]<br />
+[sourcecode language="C" collapse="true"]<br />
+/*** sumn.cpp ***/<br />
+#include &quot;functions.h&quot; </p>
+<p>int sumnatural(int n)<br />
+{<br />
+	int sum = 0;<br />
+	int i;<br />
+	for(i = 1; i &amp;lt;= n; ++i)<br />
+	{<br />
+		sum += i;<br />
+	} </p>
+<p>	return sum;<br />
+}<br />
+[sourcecode language=&quot;C&quot; collapse=&quot;true&quot;]<br />
+/*** print.cpp ***/<br />
+#include  &lt;iostream&gt;<br />
+#include &quot;functions.h&quot; </p>
+<p>using namespace std; </p>
+<p>void printtext()<br />
+{<br />
+	cout &lt;&lt; &quot;Hello World!&quot;;<br />
+}<br />
+[/sourcecode]<br />
+[sourcecode language="C" collapse="true"]<br />
+/*** functions.h ***/<br />
+void printtext();<br />
+int sumnatural(int n);<br />
+[/sourcecode]</p>
+<p>The Makefile :<br />
+[sourcecode]<br />
+CC=g++<br />
+CFLAGS=-c -Wall</p>
+<p>all: print</p>
+<p>print: main.o sumn.o print.o<br />
+	$(CC) main.o sumn.o print.o -o print</p>
+<p>main.o: main.cpp<br />
+	$(CC) $(CFLAGS) main.cpp</p>
+<p>sumn.o: sumn.cpp<br />
+	$(CC) $(CFLAGS) sumn.cpp</p>
+<p>print.o: print.cpp<br />
+	$(CC) $(CFLAGS) print.cpp</p>
+<p>clean:<br />
+	rm -rf *o print<br />
+[/sourcecode]</p>
+<h4> Variables </h4>
+<p>var = value<br />
+Normal assignment of a variable - values within it are recursively expanded when the variable is used, not when it's declared.</p>
+<p>var := value<br />
+Assignment of a variable with simple expansion of the values inside - values within it are expanded at declaration time.</p>
+<p>var ?= value<br />
+Assignment of a variable only if it doesn't have a value.</p>
+<p>var += value<br />
+Appending the supplied value to the existing value.</p>

@@ -1,0 +1,32 @@
+---
+layout: post
+title: Setting up IRC bouncers using FreeBNC's ZNC and Mozilla's ChatZilla
+date: 2013-12-22 21:16:03.000000000 +05:30
+categories:
+- Misc
+tags: []
+status: draft
+type: post
+published: false
+meta:
+  _edit_last: '43679539'
+author: 
+---
+<p>IRC bouncers (shortened as BNC) are servers that act as proxies between the you and the servers. Besides this, they provide lot of useful services like logging the messages when away. In this post, I'll explain setting up BNC servers provided by <a title="freeBNC" href="http://freebnc.net/" target="_blank">freeBNC</a>. freeBNC uses <a title="ZNC" href="http://wiki.znc.in/ZNC" target="_blank">ZNC</a>, the BNC server program.</p>
+<p>The very first step is to register with freeBNC. As instructed <a title="here" href="http://freebnc.net/apply" target="_blank">here</a>, this requires logging on to their <a title="channel" href="irc://irc.esper.net/freeBNC" target="_blank">channel</a> and issuing the following command there.</p>
+<p>[code language="bash"]!apply user irc_server irc_port mail​[/code]</p>
+<p>As the site itself says, a possible example would be,</p>
+<p>[code language="bash"]!apply ChauffeR irc.esper.net 6667 chauffer@freebnc.net[/code]</p>
+<p>The bot at the IRC would send a confirmation email. Follow the instructions and wait for approval.</p>
+<h2>Configuring ZNC</h2>
+<p>Once the application has been approved, the ZNC bouncer has to be configured.</p>
+<p>IRC bouncers work like this - the bouncer runs 24x7 on the servers and have to be configured to enter the chat room (the IRC channel) we want to use. Once configured, we simply connect to the BNC rarther than the IRC server for the channel - the BNC itself would show channel window once connected.<a href="http://prometheansacrifice.files.wordpress.com/2013/12/screenshot-from-2013-12-23-003526.png"><img class="size-medium wp-image-196 aligncenter" alt="Screenshot from 2013-12-23 00:35:26" src="assets/screenshot-from-2013-12-23-003526.png?w=300" width="300" height="110" /></a></p>
+<p>Explicitly select the</p>
+<p style="display:inline;">Bind Host and</p>
+<p style="display:inline;">DCC Bind Host as</p>
+<p style="display:inline;">par01.gw-out.freebnc.net. Tick connect to IRC and automatically re-connect and add  a channe</p>
+<p>&nbsp;</p>
+<h2>Configuring the IRC Client</h2>
+<p>Chatzilla can be installed by following this <a title="link" href="https://addons.mozilla.org/en-US/firefox/addon/chatzilla/?src=search" target="_blank">link.</a> Once installed, open <a title="this" href="irc://par01.freebnc.net:1337/" target="_blank">this</a> link in mozilla. In other IRC clients like XChat and HexChat, create a new server and name is bnc with <a id="net-url-anchor" href="irc://par01.freebnc.net:1337/">irc://par01.freebnc.net/</a> as the server address and port no 1337 (1338 if you want SSL)</p>
+<p>Authenticate yourselves with the following command on the IRC client</p>
+<p>[code language="bash"] /quote PASS username:passw0rd [/code]</p>

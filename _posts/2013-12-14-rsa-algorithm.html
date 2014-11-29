@@ -1,0 +1,115 @@
+---
+layout: post
+title: RSA Algorithm
+date: 2013-12-14 17:15:19.000000000 +05:30
+categories:
+- Misc
+tags:
+- computer networks
+- lab
+- RSA algorithm
+- vtu
+status: publish
+type: post
+published: true
+meta:
+  _publicize_pending: '1'
+  _edit_last: '43679539'
+author: 
+---
+<p>Rivest Shamir Adleman Algorithm is an algorithm used to encrypt data. It creates two keys, public and private, to encrypt and decrypt the data - public key to encrypt it and private to decrypt. To create the keys, the algorithm takes two prime numbers as input.</p>
+<p>The relationship between the two key and how they help encrypt and decrypt data involves considerably complex math. Important thing to note is that the plain text (piece of data being encrypted) must be smaller than the product of the prime numbers used to generate the public and private keys.</p>
+<p>In the following code, we try to encrypt a string and decrypt it back - character by character. Each character - capital or small - lies in the ASCII range of 65 - 122 (65-90 for caps and 97-122 for lower case). This mean as we encrypt each character, the plain text (the character itself) can at most be 122.</p>
+<p>The rule says, plain text must be smaller than the product of the two prime numbers chosen - i.e. the prime numbers chosen must be large enough.</p>
+<p>The complete working code can be found <a title="here" href="https://github.com/prometheansacrifice/vtu-lab-programs/blob/master/Computer%20Networks/pgm6/rsa.c" target="_blank">here.</a></p>
+<p>[sourcecode language="text" gutter="false"]</p>
+<p>/* RSA algorithm to generate a public and a private key and encrypt and decrypt the message text*/<br />
+#include &lt;stdio.h&gt;<br />
+#include &lt;stdlib.h&gt;<br />
+#include &lt;math.h&gt;<br />
+#include &lt;string.h&gt;<br />
+unsigned int c, m, pt[50], ct[50], msglength;<br />
+char message[50];</p>
+<p>int mult(unsigned int plaintext, unsigned int key, unsigned int n){<br />
+unsigned long int k = 1;<br />
+int j;<br />
+for (j = 1; j &lt;= key; j++)<br />
+k = (k * plaintext) % n;<br />
+return (unsigned int) k;<br />
+}</p>
+<p>int isPrime(int n){<br />
+int i, lim;<br />
+lim = n / 2;<br />
+for(i = 2; i &lt;= lim; i++)    {<br />
+if((n % i) == 0)        {<br />
+return 0; // Not prime<br />
+}<br />
+}<br />
+return 1; //Prime<br />
+}</p>
+<p>int gcd (int a, int b){<br />
+if(b == 0) {<br />
+return 1;<br />
+}<br />
+while(b){<br />
+int rem = a % b;<br />
+a = b;<br />
+b = rem;<br />
+}<br />
+return a;<br />
+}</p>
+<p>int main ()<br />
+{<br />
+int i, j; // for loop<br />
+int p, q; //The prime numbers<br />
+int d, e; //d -&gt; private key e -&gt; public key<br />
+int z, n; //n  = p * q and z = (p-1) * (q-1)</p>
+<p>printf(&quot;Enter two prime numbers (such that their product is atleast more than 150): &quot;);<br />
+scanf(&quot;%d %d&quot;, &amp;p, &amp;q);<br />
+// p = 11; q = 23;</p>
+<p>if((isPrime(p) == 0) || (isPrime(q) == 0)){<br />
+printf(&quot;Invalid Numbers !! Please Enter Prime Numbers \n&quot;);<br />
+return 1;<br />
+}</p>
+<p>if(p == q){<br />
+printf(&quot;Two Prime Numbers Must be Different \n&quot;);<br />
+return 1;<br />
+}</p>
+<p>n = p * q;<br />
+z = (p - 1) * (q - 1);</p>
+<p>//--- Calculating e ---//<br />
+for(i = 2; i &lt; z; i++) {<br />
+if((gcd(z, i)) == 1){<br />
+e = i;<br />
+printf(&quot;e = %d\n&quot;, e);<br />
+break;<br />
+}<br />
+}</p>
+<p>//--- Calculating d ---/<br />
+for(j = n; j &gt;= 1; j--){<br />
+if(((e * j) % z) == 1){<br />
+d = j; //private key<br />
+printf(&quot;d = %d\n&quot;, d);<br />
+break;<br />
+}<br />
+}</p>
+<p>printf(&quot;Enter The Text To Encrypt \n&quot;);<br />
+scanf(&quot;%s&quot;, message);</p>
+<p>msglength = strlen(message);<br />
+for(i = 0; i &lt; msglength; i++)<br />
+pt[i] = message[i];</p>
+<p>for(i = 0; i &lt; msglength; i++){<br />
+ct[i] = mult(pt[i], e, n);<br />
+}</p>
+<p>printf(&quot;The Encrypted Text is \n&quot;);<br />
+for(i = 0;i &lt; msglength; i++)<br />
+printf(&quot;%d &quot;, ct[i]);</p>
+<p>printf(&quot;\nThe Decrypted Text is \n&quot;);<br />
+for(i = 0;i &lt; msglength; i++){<br />
+pt[i] = mult(ct[i], d, n);<br />
+printf(&quot;%c&quot;, pt[i]);<br />
+}</p>
+<p>printf(&quot;\n&quot;);<br />
+return 0 ;<br />
+}</p>
+<p>[/sourcecode]</p>

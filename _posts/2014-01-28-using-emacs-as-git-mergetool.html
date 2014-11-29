@@ -1,0 +1,20 @@
+---
+layout: post
+title: Using emacs as git mergetool
+date: 2014-01-28 13:21:04.000000000 +05:30
+categories: []
+tags:
+- emacs
+status: publish
+type: post
+published: true
+meta:
+  _publicize_pending: '1'
+  _edit_last: '43679539'
+author: 
+---
+<p>And for some reason emerge wouldn't open as a mergetool when I followed the steps <a href="http://www.emacswiki.org/emacs/EmergeDiff" target="_blank">mentioned</a> at <a href="http://emacswiki.org/" target="_blank">Emacs Wiki</a>. I kept getting the following error:</p>
+<p>[code language="bash"]The merge tool emerge is not available as '/Users/prometheansacrifice/bin/emerge-for-git[/code]</p>
+<p>Opened <a href="http://git-scm.com/docs/git-mergetool" target="_blank">docs</a> at <a href="http://git-scm.com/" target="_blank">git-scm </a>and realized git passes names of the local, remote and base copies of the file with merge conflicts with $LOCAL, $GLOBAL and $REMOTE respectively. The filename of the final merged copy is $MERGED.  So all you need to do is,</p>
+<p>[code language="bash"]git config --global mergetool.emerge.cmd 'emacs -Q $LOCAL $REMOTE $BASE $MERGED'[/code]</p>
+<p>And voila! You're ready to go.</p>

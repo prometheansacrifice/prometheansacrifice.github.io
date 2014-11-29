@@ -1,0 +1,47 @@
+---
+layout: post
+title: ''
+date: 2013-04-11 07:58:45.000000000 +05:30
+categories: []
+tags: []
+status: draft
+type: post
+published: false
+meta:
+  _edit_last: '43679539'
+author: 
+---
+<p>[sourcecode language="C"]<br />
+#include &lt;iostream&gt;<br />
+#include &lt;cstdio&gt;<br />
+#include &lt;unistd.h&gt;<br />
+#include &lt;sys/types.h&gt;<br />
+#include &lt;sys/wait.h&gt;</p>
+<p>using namespace std;</p>
+<p>int main()<br />
+{<br />
+	pid_t c1,rc1;<br />
+	int status;<br />
+	c1 = fork();<br />
+	switch(c1)<br />
+	{<br />
+		case -1:<br />
+		perror(&quot;fork:&quot;);<br />
+		return -1;</p>
+<p>		case 0:<br />
+		cout &lt;&lt; &quot;Child process here:\n&quot;;<br />
+		cout &lt;&lt; &quot;My pid: &quot; &lt;&lt; getpid() &lt;&lt; &quot;\n&quot;;<br />
+		cout &lt;&lt; &quot;My Parent's pid: &quot; &lt;&lt; getppid() &lt;&lt; &quot;\n&quot;;<br />
+		cout &lt;&lt; &quot;Exiting...\n&quot;;<br />
+		_exit(4);</p>
+<p>		default:<br />
+		rc1 = wait(&amp;status);<br />
+		cout &lt;&lt; &quot;Parent here:\n&quot;;<br />
+		cout &lt;&lt; &quot;My pid: &quot; &lt;&lt; getpid() &lt;&lt; &quot;\n&quot;;<br />
+		cout &lt;&lt; &quot;Child pid: &quot; &lt;&lt; c1 &lt;&lt; &quot;\n&quot;;<br />
+		cout &lt;&lt; &quot;Return value from wait(): &quot; &lt;&lt; rc1 &lt;&lt; &quot;\n&quot;;<br />
+		cout &lt;&lt; &quot;Child's exit status: &quot; &lt;&lt; WEXITSTATUS(status) &lt;&lt; &quot;\n&quot;;<br />
+	}<br />
+	return 0;<br />
+}<br />
+[/sourcecode]</p>

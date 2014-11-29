@@ -1,0 +1,47 @@
+---
+layout: post
+title: Obtaining user logs! (Task 1)
+date: 2014-04-23 06:09:51.000000000 +05:30
+categories: []
+tags: []
+status: publish
+type: post
+published: true
+meta:
+  blog_id: '46402383'
+  post_id: '114'
+  is_reblog: '1'
+  _publicize_pending: '1'
+  reblog_snapshot: |-
+    O:8:"stdClass":8:{s:5:"title";s:30:"Obtaining user logs! (Task 1) ";s:4:"type";s:4:"post";s:9:"mime_type";s:0:"";s:6:"format";b:0;s:12:"modified_gmt";s:19:"2014-04-23 01:56:34";s:9:"permalink";s:69:"http://ksrivatsa.wordpress.com/2014/04/23/obtaining-user-logs-task-1/";s:7:"content";s:6221:"<div class="reblogged-content">
+    <p>Out of a lot of options that we had, we opted for OpenCart ( http://www.opencart.com/ ) for our front end e-commerce solution. So the first step was to download and configure open cart over a locally running LAMP server. The steps for setting up the OpenCart site on your Apache server can be found here : " http://docs.opencart.com/display/opencart/Installation " .</p>
+    <p> </p>
+    <p>                      <img id="i-124" class="size-full wp-image" src="http://prometheansacrifice.files.wordpress.com/2014/04/screenshot-from-2014-04-23-061018.png" alt="Image" data-originalSrc="http://ksrivatsa.files.wordpress.com/2014/04/screenshot-from-2014-04-23-061018.png?w=650" data-rehosted="1"></p>
+    <p> </p>
+    <p>Apache provides a mod_usertrack ( "http://httpd.apache.org/docs/2.0/mod/mod_usertrack.html " ) module for logging the user activity by using cookies and generates a 'clickstream' log. An enhanced version of the same module can be found here by the name mod_cookietrack : " https://github.com/piykumar/modified_mod_cookietrack " . This module requires apache-dev to be installed and perl. After that you install it using the command 'sudo ./build.pl'.</p>
+    <p> </p>
+    <blockquote><p>NOTE : If you have errors saying that apxs file is not found in /usr/sbin/apxs try to look for it in the folder /usr/bin/apxs and then copy it there!</p></blockquote>
+    <p> </p>
+    <p>Once that is done and the module has been successfully added to your Apache server, its time to provide the UUIDs for our logs. You see, the module has support for an external library to generate UUIDs. The function should be written in C and the prototype for the same being</p>
+    <p style="text-align:center;"><strong>void gen_uid(char *uid, char *timestamp, char *ip);</strong></p>
+    <p>We have a basic function for it which generates UUIDs with the format "I....T...R...", where the numbers after I are the IP address and those after T are the timestamp and three digits after R are random digits generated for uniqueness! </p>
+    <p>Now that we have the function to generate the UUIDs, we add it to the module with the command, ' sudo ./build.pl --inc /where/uid/lives --lib uuid.c '.</p>
+    <p>The module has a many directives of which the CookieTracking directive has to be enabled for the tracking to begin. This can be done by adding the line 'CookieTracking on' in the server config file ie. either apache2.conf or httpd.conf. Some other useful directives are CookieExpires, CookieName, CookieNoteName etc. The details of all the directives are available in the documentation of mod_cookietrack.</p>
+    <p><a href="http://prometheansacrifice.files.wordpress.com/2014/04/screenshot-from-2014-04-23-065503.png">                      <img id="i-167" class="size-full wp-image" src="http://prometheansacrifice.files.wordpress.com/2014/04/screenshot-from-2014-04-23-065503.png" alt="Image" data-originalSrc="http://ksrivatsa.files.wordpress.com/2014/04/screenshot-from-2014-04-23-065503.png?w=650" data-rehosted="1"></a></p>
+    <p>The CookieNoteName directive is used to refer to the UUID while generating custom logs. Here i have used the CookieNoteName uid for referring to the UUIDs. The name of the cookie here is 'ocart'. Once done save the file and <strong>remember to restart</strong> the server with the command ' sudo service apache2 restart '.</p>
+    <p>Now you can go to your OpenCart site and check if the cookie is being created by the WebConsole( Ctrl+Shift+K ). Here is a what it should look like!</p>
+    <p><a href="http://prometheansacrifice.files.wordpress.com/2014/04/screenshot-from-2014-04-23-065401.png">                     <img id="i-180" class="size-full wp-image" src="http://prometheansacrifice.files.wordpress.com/2014/04/screenshot-from-2014-04-23-065401.png" alt="Image" data-originalSrc="http://ksrivatsa.files.wordpress.com/2014/04/screenshot-from-2014-04-23-065401.png?w=650" data-rehosted="1"></a>   </p>
+    <p>Notice that the cookie contains the name 'ocart' and the 64 bit UUID!</p>
+    <p>Finally we have to generate some custom logs. A really good place to learn more about generating server logs would be " <span><span class="null"><a class="_553k" href="http://www.serverwatch.com/tutorials/article.php/1128861/Apache-Guide-Logging-Part-3--Custom-Logs.htm" target="_blank" rel="nofollow">http://www.serverwatch.com/tutorials/article.php/1128861/Apache-Guide-Logging-Part-3--Custom-Logs.htm</a></span></span>l ". First we have to define a log format and refer it by some name. And then define a directory for the custom logs to be stored.</p>
+    <p><a href="http://prometheansacrifice.files.wordpress.com/2014/04/screenshot-from-2014-04-23-0655031.png">                         <img id="i-185" class="size-full wp-image" src="http://prometheansacrifice.files.wordpress.com/2014/04/screenshot-from-2014-04-23-0655031.png" alt="Image" data-originalSrc="http://ksrivatsa.files.wordpress.com/2014/04/screenshot-from-2014-04-23-0655031.png?w=650" data-rehosted="1"></a></p>
+    <p>In line 211 i have defined a Log Format which displays just the UUID( '%{uid}n' ) and the first line of the request( '%r' ) and give it a referral name 'client' . Next in line 213 i have defined as to where these custom logs will be stored ie. /var/www/logs/c_logs. Once that is done remember to<strong> create the directory and touch the file</strong> in the appropriate directory. And ofcourse please do <strong>restart the server</strong>!</p>
+    <p>Go to your OpenCart site and start sending requests, you will then see the logs piling up in the c_logs file in /var/www/logs folder!</p>
+    <p><a href="http://prometheansacrifice.files.wordpress.com/2014/04/screenshot-from-2014-04-23-071926.png">                    <img id="i-196" class="size-full wp-image" src="http://prometheansacrifice.files.wordpress.com/2014/04/screenshot-from-2014-04-23-071926.png" alt="Image" data-originalSrc="http://ksrivatsa.files.wordpress.com/2014/04/screenshot-from-2014-04-23-071926.png?w=650" data-rehosted="1"></a></p>
+    <p>So this is just the beginning! The first of the 5 tasks to continue! Cheers! :D ,,/</p>
+    <p> </p>
+    <p> </p>
+    <p> </p>
+    </div>";s:15:"images_mirrored";i:5;}
+author: 
+---
+

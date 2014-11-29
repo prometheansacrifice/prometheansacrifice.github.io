@@ -1,0 +1,33 @@
+---
+layout: post
+title: Installing GDAL
+date: 2013-11-30 08:43:37.000000000 +05:30
+categories:
+- Misc
+tags:
+- GDAL
+- geojson
+- Geospatial
+- shapefiles
+status: publish
+type: post
+published: true
+meta:
+  _publicize_pending: '1'
+  _edit_last: '43679539'
+author: 
+---
+<p>Geospatial Data Abstraction Library is a translator library to assist converting data in one geospatial format to another. Mainly I wanted to convert shapefiles to GeoJSON as instructed <a href="http://bost.ocks.org/mike/map/">here</a></p>
+<p>Mac users can easily install GDAL using Homebrew</p>
+<pre>brew install gdal</pre>
+<p>GDAL, for ubuntu systems, can be found in the ubuntugis repository. <a href="https://wiki.ubuntu.com/UbuntuGIS">UbuntuGIS</a> is a repository containing popular GIS applications. GDAL is one of them.</p>
+<p>Thus, installing GDAL requires adding of the ubuntugis PPA (Personal Package Achives) to your ubuntu system</p>
+<pre>sudo add-apt-repository ppa:ubuntugis/ppa
+</pre>
+<p>This adds the ppa of stable repository to the system. For the more curious, refer <a href="https://launchpad.net/%7Eubuntugis/+archive/ppa/">this</a></p>
+<p><a href="http://trac.osgeo.org/gdal/wiki/DownloadingGdalBinaries">This</a> has information for installing GDAL for other platforms</p>
+<p>The "quickstart" guide <a href="http://trac.osgeo.org/ubuntugis/wiki/UbuntuGISRepository">here</a> has more information</p>
+<p>After this, its only a matter of installing the GIS apps we need - in this case GDAL</p>
+<pre>sudo apt-get install gdal-bin
+</pre>
+<p>Yes! You saw it right. It's not gdal but gdal-bin. Remember this if you want to save hours of googling trying to figure out why its not working. This <a href="http://lists.osgeo.org/pipermail/ubuntu/2012-May/000565.html">link</a> helped me out.</p>
