@@ -1,0 +1,15 @@
+{
+  "name": "prometheansacrifice-website",
+  "version": "1.0.0",
+  "description": "Website",
+  "main": "dist/index.html",
+  "scripts": {
+    "test": "node tests/*",
+    "preinstall": "bash install.bash"
+  },
+  "author": "Manas <prometheansacrifice@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "tape": "^4.4.0"
+  }
+}
