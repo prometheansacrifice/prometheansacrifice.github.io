@@ -8,6 +8,7 @@
     "preinstall": "bash install.bash"
   },
   "author": "Manas <prometheansacrifice@gmail.com>",
+  "repository": "https://github.com/prometheansacrifice/prometheansacrifice-www.git",
   "license": "ISC",
   "devDependencies": {
     "tape": "^4.4.0"
