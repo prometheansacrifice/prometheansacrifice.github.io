@@ -1,4 +1,0 @@
-.DS_Store
-.sass-cache/
-# dist/ # gh-pages needs the dist
-node_modules
