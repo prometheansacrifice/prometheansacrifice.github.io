@@ -22,7 +22,8 @@ class Bio extends React.Component {
         <div className="psac-home-view">
           <h1>Manas Jayanth</h1>
           <h2>(prometheansacrifice)</h2>
-          <p>Looking for nirvana in code</p>
+          <p>My nerdy alter ego</p>
+          <p>You can find more about me <a href="https://manas-jayanth.com/"> here </a>
         </div>
       </div>
     );
