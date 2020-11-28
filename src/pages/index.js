@@ -1,47 +1,16 @@
-import React from "react";
-import Link from "gatsby-link";
-import get from "lodash/get";
-import Helmet from "react-helmet";
+import React from "react"
+import { Link } from "gatsby"
 
-import Bio from "../components/Bio";
-import { rhythm } from "../utils/typography";
+import Layout from "../components/layout"
+import Image from "../components/image"
+import SEO from "../components/seo"
+import Bio from "../components/bio"
 
-class BlogIndex extends React.Component {
-  render() {
-    const siteTitle = get(this, "props.data.site.siteMetadata.title");
-    const posts = get(this, "props.data.allMarkdownRemark.edges");
+const IndexPage = () => (
+  <Layout>
+     <SEO title="Home" />
+     <Bio />
+  </Layout>
+)
 
-    return (
-      <div>
-        <Helmet title={siteTitle} />
-        <Bio />
-      </div>
-    );
-  }
-}
-
-export default BlogIndex;
-
-export const pageQuery = graphql`
-  query IndexQuery {
-    site {
-      siteMetadata {
-        title
-      }
-    }
-    allMarkdownRemark(sort: { fields: [frontmatter___date], order: DESC }) {
-      edges {
-        node {
-          excerpt
-          fields {
-            slug
-          }
-          frontmatter {
-            date(formatString: "DD MMMM, YYYY")
-            title
-          }
-        }
-      }
-    }
-  }
-`;
+export default IndexPage
