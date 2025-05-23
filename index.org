@@ -57,7 +57,7 @@ https://www.fda.gov/inspections-compliance-enforcement-and-criminal-investigatio
 **  sources of a package in ocaml
 #+PROPERTY: PUBDATE 2024-10-16 Wed 14:17
 1. Stdlib: eg unix
-2. Ppam repo of packages
+2. Opam repo of packages
 3. Pinned: git URLs or local paths
 
 ** Then parse the command args
