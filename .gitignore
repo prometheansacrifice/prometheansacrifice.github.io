@@ -1,2 +1,6 @@
 # Emacs
 *~
+
+# Emacs org-publish
+*.html
+index.xml

@@ -1,0 +1,23 @@
+* Writing a new blog post
+
+1. Add the following header to the =.org= file
+
+   #+begin_src org
+     #+OPTIONS: num:nil
+     #+OPTIONS: toc:nil
+     #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="css/styles.css" />
+     #+HTML_HEAD_EXTRA: <link rel="preconnect" href="https://fonts.googleapis.com">
+     #+HTML_HEAD_EXTRA: <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+     #+HTML_HEAD_EXTRA: <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400&display=swap" rel="stylesheet">
+     #+HTML_HEAD_EXTRA: <link rel="alternate" type="application/rss+xml" href="https://prometheansacrifice.sh/index.xml" title="RSS feed for https://prometheansacrifice.sh/">
+   #+end_src
+
+2. Wrap the article contents in html =article= tag. Example,
+
+   #+begin_src org
+     * Krisp noise suppression
+     :PROPERTIES:
+     :html_container: article
+     :html_container_class: psac-article
+     :END:
+   #+end_src

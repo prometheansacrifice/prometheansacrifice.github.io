@@ -1,0 +1,131 @@
+#+OPTIONS: num:nil
+#+OPTIONS: toc:nil
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="css/styles.css" />
+#+HTML_HEAD_EXTRA: <link rel="preconnect" href="https://fonts.googleapis.com">
+#+HTML_HEAD_EXTRA: <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+#+HTML_HEAD_EXTRA: <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400&display=swap" rel="stylesheet">
+#+HTML_HEAD_EXTRA: <link rel="alternate" type="application/rss+xml" href="https://prometheansacrifice.sh/index.xml" title="RSS feed for https://prometheansacrifice.sh/">
+
+#+BEGIN_EXPORT html
+<header>
+  <h1>prometheansacrifice</h1>
+  <p>Running notes. Daily logs</p>
+</header>
+#+END_EXPORT  
+
+
+* CMU's common lisp book
+:PROPERTIES:
+:html_container: article
+:html_container_class: psac-article
+:END:
+
+https://www.cs.cmu.edu/~dst/LispBook/book.pdf
+
+AI generated summary saved for quick reference
+
+The book linked, "Common Lisp: A Gentle Introduction to Symbolic
+Computation" by David S. Touretzky, is a comprehensive guide to
+programming in Common Lisp. It's designed for beginners with some
+programming experience, aiming to teach not just Lisp syntax but also
+the principles of symbolic computation and the Lisp way of thinking
+about problems. 
+
+The key points of the book include:
+
+1. *Introduction to Lisp Syntax*: It starts with basics such as data
+   types, control structures, and functions, catering to readers new
+   to Lisp. The syntax of Lisp, characterized by its use of
+   parentheses, is introduced early on. 
+
+2. *Symbolic Computation*: A core theme of the book is symbolic
+   computation, which is a strength of Lisp. This includes
+   manipulating symbols and expressions, allowing for powerful
+   abstraction and dynamic programming techniques. 
+
+3. *Functions*: The book delves into defining and using functions,
+   functional programming concepts, and higher-order functions,
+   emphasizing Lisp's capabilities for function manipulation and
+   creating abstract operations. 
+
+4. *Macros and Special Operators*: Readers are introduced to macros,
+   which allow for meta-programming and can greatly enhance the
+   expressiveness and efficiency of code. Special operators for
+   controlling flow and managing scoping rules are also covered. 
+
+5. *Data Structures*: The treatment includes Lisp's built-in data
+   structures like lists, vectors, and hash tables, along with
+   operations to manipulate them. It emphasizes the importance of
+   lists in Lisp programming. 
+
+6. *Practical Applications*: While the book is gentle, it does not shy
+   away from touching upon practical applications and more advanced
+   topics, preparing readers to use Lisp for real-world problems and
+   software development projects. 
+
+7. *Lisp Environment*: Some coverage is given to the Lisp programming
+   environment, helping readers understand how to use a Lisp system,
+   debug programs, and work effectively with Lisp's REPL. 
+
+Overall, the book aims to be accessible, focusing on building a solid
+foundation in both Lisp and the concepts of symbolic computation. It's
+filled with exercises and examples to help solidify the readers'
+understanding and encourage a hands-on approach to learning. 
+
+**** Practical applications this book talks about
+:PROPERTIES:
+:ID:       8879AC21-67AA-4FAB-9182-4A429F82C03F
+:END:
+
+"Common Lisp: A Gentle Introduction to Symbolic Computation" by David
+S. Touretzky introduces readers to various practical applications of
+Lisp, emphasizing the breadth of problems that can be tackled with
+this flexible programming language. Although the book primarily
+focuses on introducing Lisp and symbolic computation, it touches upon
+different areas where Lisp can be applied effectively. 
+
+### Some of the practical applications mentioned or implied in the book might include:
+
+1. *Artificial Intelligence (AI) and Expert Systems*: Lisp has a long
+   history of use in AI research and development. The book helps lay
+   the foundation for understanding how Lisp can be used to create
+   complex AI algorithms and expert systems. 
+
+2. *Natural Language Processing (NLP)**: Through examples and
+   exercises, readers can see how Lisp's symbolic manipulation
+   capabilities make it suitable for processing and understanding
+   human (natural) languages. 
+
+3. *Symbolic Mathematics*: The book delves into how Lisp can be used
+   for symbolic math, enabling the manipulation of mathematical
+   expressions in a symbolic form rather than just numerical
+   computation. 
+
+4. *Data Analysis*: While not a focus, the principles taught can be
+   applied to data analysis tasks, thanks to Lisp's powerful data
+   manipulation capabilities. 
+
+5. *Web Development*: Although not a primary focus of this book, Lisp
+   (and dialects such as Clojure) have been used for web
+   development. The book lays a foundational understanding of Lisp
+   that could be adapted to web development contexts. 
+
+6. *Software Prototyping*: Lisp's flexibility and the rapid
+   development cycle promoted in the book are ideal for prototyping
+   software projects across many domains. 
+
+7. *Computer Graphics*: Some exercises and discussions might hint at
+   Lisp's potential to manage complex computer graphics operations, a
+   field where Lisp has historically been used, particularly in
+   academia and research. 
+
+### Conclusion
+
+While "Common Lisp: A Gentle Introduction to Symbolic Computation" is
+aimed more at teaching the language and symbolic computation concepts
+rather than focusing heavily on specific applications, the skills and
+knowledge it imparts can be leveraged in a wide range of practical
+scenarios. By mastering the content of this book, readers would be
+well-equipped to apply Lisp to various problems in fields like AI,
+software development, data processing, and beyond. 
+

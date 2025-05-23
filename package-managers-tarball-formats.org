@@ -1,0 +1,40 @@
+#+OPTIONS: num:nil
+#+OPTIONS: toc:nil
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="css/styles.css" />
+#+HTML_HEAD_EXTRA: <link rel="preconnect" href="https://fonts.googleapis.com">
+#+HTML_HEAD_EXTRA: <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+#+HTML_HEAD_EXTRA: <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400&display=swap" rel="stylesheet">
+#+HTML_HEAD_EXTRA: <link rel="alternate" type="application/rss+xml" href="https://prometheansacrifice.sh/index.xml" title="RSS feed for https://prometheansacrifice.sh/">
+
+#+BEGIN_EXPORT html
+<header>
+  <h1>prometheansacrifice</h1>
+  <p>Running notes. Daily logs</p>
+</header>
+#+END_EXPORT  
+
+* Package managers have to resilient to tarball formats
+:PROPERTIES:
+:html_container: article
+:html_container_class: psac-article
+:END:
+
+Working with package managers means dealing with errors like these
+
+#+begin_src 
+  bale:info Setting up separate testing area on temporary directory +0ms
+  bale:info Packaging +1ms
+(node:15808) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+C:\Users\username\development\username\esy-libffi\_esy-package\libffi-3.4.6.tar.gz C:\Users\username\development\username\esy-libffi\_esy-package
+  bale:error Invalid tar header: unknown format. +0ms
+  bale:error Error: Invalid tar header: unknown format.
+  bale:error     at Extract.<anonymous> (C:\Users\username\development\username\bale\node_modules\promisepipe\index.js:30:23)
+  bale:error     at Extract.emit (node:events:532:35)
+  bale:error     at WritableState.afterDestroy (C:\Users\username\development\username\bale\node_modules\streamx\index.js:503:19)
+  bale:error     at Extract._destroy (C:\Users\username\development\username\bale\node_modules\tar-stream\extract.js:301:5)
+  bale:error     at WritableState.updateNonPrimary (C:\Users\username\development\username\bale\node_modules\streamx\index.js:208:16)
+  bale:error     at WritableState.update (C:\Users\username\development\username\bale\node_modules\streamx\index.js:190:72)
+  bale:error     at WritableState.updateWriteNT (C:\Users\username\development\username\bale\node_modules\streamx\index.js:553:10)
+  bale:error     at process.processTicksAndRejections (node:internal/process/task_queues:77:11) +1ms
+#+end_src

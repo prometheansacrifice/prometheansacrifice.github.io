@@ -1,0 +1,269 @@
+#+OPTIONS: num:nil
+#+OPTIONS: toc:nil
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="css/styles.css" />
+#+HTML_HEAD_EXTRA: <link rel="preconnect" href="https://fonts.googleapis.com">
+#+HTML_HEAD_EXTRA: <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+#+HTML_HEAD_EXTRA: <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400&display=swap" rel="stylesheet">
+#+HTML_HEAD_EXTRA: <link rel="alternate" type="application/rss+xml" href="https://prometheansacrifice.sh/index.xml" title="RSS feed for https://prometheansacrifice.sh/">
+
+#+BEGIN_EXPORT html
+<header>
+  <h1>prometheansacrifice</h1>
+  <p>Running notes. Daily logs</p>
+</header>
+#+END_EXPORT  
+
+* Krisp noise suppression
+:PROPERTIES:
+:html_container: article
+:html_container_class: psac-article
+:END:
+
+** It's a startup and not just a Discord feature
+:PROPERTIES:
+:ID:       F7133FCA-E1C6-483F-9E68-4FD99E6E0A17
+:END:
+https://krisp.ai/
+Discord's only using their APIs and/or browser models.
+
+** Founder: Davit Baghdasaryan
+:PROPERTIES:
+:ID:       51D428CF-F6C9-4359-B37E-5976CDC90159
+:END:
+https://www.linkedin.com/in/davitb/details/experience/
+Could not find him on Google Scholar. More of an engineer.
+
+** The founder wrote about the challenges in the space
+:PROPERTIES:
+:ID:       B07CE546-AFA2-4E76-B083-1A90581D27AF
+:END:
+And how Krisp solves non-stationary noise
+https://developer.nvidia.com/blog/nvidia-real-time-noise-suppression-deep-learning/
+
+** Krisp SDK docs
+:PROPERTIES:
+:ID:       E091F5CB-DA15-4DD3-8C94-3B2BB8B6CC1B
+:END:
+https://sdk-docs.krisp.ai/docs/getting-started-js
+
+** Microsoft hosts DNS Challenges
+:PROPERTIES:
+:ID:       9B738293-BADF-4400-9183-6999965799B2
+:END:
+Here's the outcome of one of the challenges held in 2023
+https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=10474162
+
+The tools and dataset sample needed to participate can be found on
+Github
+https://github.com/microsoft/DNS-Challenge
+
+** Mozilla funded a research in this area
+:PROPERTIES:
+:ID:       44C05D3A-388F-48B2-8DE4-C624E0FD1025
+:END:
+It crossed DSP with deep learning
+Paper https://ieeexplore.ieee.org/document/8547084/citations?tabFilter=papers#citations
+https://arxiv.org/pdf/1709.08243
+Webpage: https://jmvalin.ca/demo/rnnoise/
+Github: https://github.com/xiph/rnnoise
+
+
+** source preview
+
+#+begin_src js
+  /**
+   ,* Step 1 - Import Krisp SDK
+   ,*/
+  import KrispSDK from "/js-sdk-demo/dist/krispsdk.mjs";
+
+  if (!KrispSDK.isSupported()) {
+    document.body.innerHTML = 'KrispSDK is not supported for the browser.';
+    throw new Error('Krisp SDK is not supported');
+  }
+
+  const audioElement = document.getElementById("audio");
+  const startButton = document.getElementById("start");
+  const toggleButton = document.getElementById("toggle");
+  const stopButton = document.getElementById("stop");
+  const useSAB = document.getElementById("useSAB"); // use SharedArrayBuffer
+  const logStats = document.getElementById("logStats");
+  const logDebug = document.getElementById("logDebug");
+  const status = document.getElementById("status");
+  const loading = document.getElementById("loading");
+  const currentSampleRate = document.getElementById("currentSampleRate");
+
+  /**
+   ,* Step 2 - Create AudioContext
+   ,*/
+  const audioContext = new AudioContext();
+  currentSampleRate.innerText = audioContext.sampleRate;
+
+  let krispSDK, filterNode, stream, source, destination;
+
+  const onReady = () => {
+    toggleButton.disabled = false;
+    status.innerText = "Press toggle to apply/unapply filter";
+    loading.style.visibility = "hidden";
+  };
+
+  startButton.addEventListener("click", async () => {
+    try {
+      /**
+       ,* Step 3 - Create Krisp SDK Instance
+       ,* @description This object represents model options to be picked when creating a Krisp SDK.
+       ,* @property {boolean} params.logProcessStats For the debug purpose, if it's enabled you will see logs on the console about process times, use only on development
+       ,* @property {boolean} params.useSharedArrayBuffer For using SharedArrayBuffer's, if it's enabled SDK will use SharedArrayBuffer's to communicate between threads, instead of MessagePort.
+       ,* Make sure all security requirements are present. See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer#security_requirements
+       ,* @property {boolean} params.logDebug For the debug purpose, if it's enabled you will see logs on the console about runtime actions and errors
+       ,* @property {string} params.models.model8 Narrow band model option, pick this when sample rate is <= 8000
+       ,* @property {string} params.models.model16 Wide band model option, pick this when sample rate is <= 16000
+       ,* @property {string} params.models.model32 Full band model option, pick this if your sample Rate is > 16000
+       ,*/
+      krispSDK = new KrispSDK({
+	params: {
+	  logProcessStats: logStats.checked,
+	  useSharedArrayBuffer: useSAB.checked,
+	  debugLogs: logDebug.checked,
+	  models: {
+	    model8: "/js-sdk-demo/dist/models/model_8.kw",
+	    model16: "/js-sdk-demo/dist/models/model_16.kw",
+	    model32: "/js-sdk-demo/dist/models/model_32.kw",
+	  },
+	},
+	callbacks: {},
+      });
+
+      /**
+       ,* Step 4 - Get Stream From Browser
+       ,* @description For the best result we suggest setting the audio stream echo cancellation enabled and noise suppression disabled.
+       ,* NOTE: If device with 8000Hz sampling rate is going to be used also set autoGainControl enabled.
+       ,* @property {boolean} audio.echoCancellation
+       ,* @property {boolean} audio.noiseSuppression
+       ,* @property {boolean} audio.autoGainControl
+       ,*/
+      const audioSettings = {
+	audio: {
+	  echoCancellation: true,
+	  noiseSuppression: false,
+	  autoGainControl: false,
+	},
+      };
+      stream = await navigator.mediaDevices.getUserMedia(audioSettings);
+
+      /**
+       ,* Step 5 - Resuming AudioContext after a user action
+       ,*/
+      await audioContext.resume();
+
+      /**
+       ,* Step 6 - Init Krisp SDK
+       ,*/
+      krispSDK.init();
+
+      /**
+       ,* Step 7 - Create Audio Filter
+       ,* @description this will create a web worker, starts models loading, and will create and return an audioworkletprocessor
+       ,* @param {AudioContext} audioContext - Audio context instance
+       ,*/
+      filterNode = await krispSDK.createNoiseFilter(audioContext, onReady);
+
+      /**
+       ,* Step 8 - Create source and destination
+       ,*/
+      source = audioContext.createMediaStreamSource(stream);
+      destination = audioContext.createMediaStreamDestination();
+
+      /**
+       ,* IMPORTANT: Chrome has a known issue when the output device has an 8000Hz sampling rate. In this case, the voice may come out with artifacts and glitches
+       ,* for the calls first 5-10 seconds. More details are here https://bugs.chromium.org/p/chromium/issues/detail?id=1401335
+       ,* This issue has a workaround, which can be accomplished by the code:
+       ,* 1. create a secondary destination
+       ,* 2. connect the secondary destination to filter node
+       ,* 3. mute audio element
+       ,* Note, that this workaround must not be used for Firefox.
+       ,*/
+
+      // const secondaryDestination = audioContext.destination;    // Chrome issue workaround. Step 1. create a secondary destination
+      // filterNode.connect(secondaryDestination);                 // Chrome issue workaround. Step 2. connect the secondary destination
+      // audioElement.muted = true;                                // Chrome issue workaround. Step 3. mute the audio element
+
+      /**
+       ,* Step 9 - Connect source to filter and filter to destination
+       ,*/
+      source.connect(filterNode);
+      filterNode.connect(destination);
+
+      /**
+       ,* Step 10 - Connect destination stream to audio Element for listening cleaned stream
+       ,*/
+      audioElement.srcObject = destination.stream;
+      audioElement.play();
+
+      status.innerText =
+	"Please wait. Krisp is setting the model and initializing WASM processor";
+      loading.style.visibility = "visible";
+      startButton.disabled = true;
+      logStats.disabled = true;
+      logDebug.disabled = true;
+      stopButton.disabled = false;
+      useSAB.disabled = true;
+    } catch (err) {
+      console.log(err);
+    }
+  });
+
+  toggleButton.addEventListener("click", () => {
+    /**
+     ,* Step 11 - Toggle Noise Cancellation
+     ,*/
+    if (filterNode.isEnabled()) {
+      filterNode.disable();
+      toggleButton.innerText = "Toggle Krisp âœ˜";
+      toggleButton.classList.remove("btn-success");
+      toggleButton.classList.add("btn-outline-primary");
+    } else {
+      filterNode.enable();
+      toggleButton.innerText = "Toggle Krisp âœ“";
+      toggleButton.classList.remove("btn-outline-primary");
+      toggleButton.classList.add("btn-success");
+    }
+  });
+
+  stopButton.addEventListener("click", async () => {
+    startButton.disabled = false;
+    logStats.disabled = false;
+    logDebug.disabled = false;
+    useSAB.disabled = false;
+    toggleButton.disabled = true;
+    stopButton.disabled = true;
+
+    /**
+     ,* Step 12 - Disconnect source, destination and filterNode, stop all tracks
+     ,*/
+    if (source) source.disconnect();
+    if (destination) destination.disconnect();
+    if (stream) stream.getTracks().forEach((track) => track.stop());
+    if (filterNode) filterNode.disconnect();
+
+    /**
+     ,* Step 13 - Dispose filterNode, which will terminate worker
+     ,*/
+    await filterNode.dispose();
+
+    /**
+     ,* Step 14 - Suspend audioContext
+     ,*/
+    if (audioContext) await audioContext.suspend();
+
+    /**
+     ,* Step 15 - Dispose Krisp SDK
+     ,*/
+    krispSDK.dispose();
+    loading.style.visibility = "hidden";
+    status.innerText = "Press start to begin";
+    toggleButton.innerText = "Toggle Krisp";
+    toggleButton.classList.remove("btn-success");
+    toggleButton.classList.add("btn-outline-primary");
+    audioElement.pause();
+  });
+#+end_src

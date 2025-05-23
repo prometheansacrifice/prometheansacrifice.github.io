@@ -1,0 +1,1664 @@
+#+OPTIONS: num:nil
+#+OPTIONS: toc:nil
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="css/styles.css" />
+#+HTML_HEAD_EXTRA: <link rel="preconnect" href="https://fonts.googleapis.com">
+#+HTML_HEAD_EXTRA: <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+#+HTML_HEAD_EXTRA: <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400&display=swap" rel="stylesheet">
+#+HTML_HEAD_EXTRA: <link rel="alternate" type="application/rss+xml" href="https://prometheansacrifice.sh/index.xml" title="RSS feed for https://prometheansacrifice.sh/">
+
+#+BEGIN_EXPORT html
+<header>
+  <h1>prometheansacrifice</h1>
+  <p>Running notes. Daily logs</p>
+</header>
+#+END_EXPORT  
+
+
+* Learning about conditional directives with GPT
+:PROPERTIES:
+:html_container: article
+:html_container_class: psac-article
+:END:
+
+AI Generated.
+
+#+begin_src common-lisp
+#+arm64
+(sys.int::cal "sys:source;gui;blit-generic.lisp")
+#+end_src
+
+
+What is =#+arm64= in this snippet
+
+=#+arm64= in the snippet is a conditional compilation directive used
+in Common Lisp. It specifies that the following expression
+=(sys.int::cal "sys:source;gui;blit-generic.lisp")= is to be included
+or executed only if the =arm64= feature is present in the Lisp
+environment. This is part of the Common Lisp conditionalization
+system, allowing for code to be selectively compiled or loaded based
+on the presence of certain features, making it easier to write
+portable and platform-specific code. 
+
+**** Following results from ripgrep when the above conditional compilation directive was searched.
+:PROPERTIES:
+:ID:       897F28F1-7498-47A9-8174-BFF98358AF1D
+:END:
+
+#+begin_src rg
+/opt/homebrew/bin/rg --color=always --colors=match:fg:red --colors=path:fg:magenta --colors=line:fg:green --colors=column:none -n --column --type-add=gyp\:\*.gyp --type-add=gyp\:\*.gypi -i --heading --no-config --type-add=custom\:\* --type=custom -e arm64 .
+
+File: ./supervisor/arm64/gic.lisp
+   1   6 ;;;; ARM64 interrupt controller driver
+
+File: ./supervisor/arm64/pager.lisp
+   3  15 (defconstant +arm64-tte-present+            #x001)
+   4  15 (defconstant +arm64-tte-not-block+          #x002
+   6  15 (defconstant +arm64-tte-accessed+           #x400)
+   7  15 (defconstant +arm64-tte-ap+                 (byte 2 6))
+   8  15 (defconstant +arm64-tte-ap-prw-una+         0 "Prot RW, user not accessible")
+   9  15 (defconstant +arm64-tte-ap-prw-urw+         1 "Prot RW, user RW")
+  10  15 (defconstant +arm64-tte-ap-pro-una+         2 "Prot RO, user not accessible")
+  11  15 (defconstant +arm64-tte-ap-pro-uro+         3 "Prot RO, user RO")
+  12  15 (defconstant +arm64-tte-accessed+           #x400)
+  13  15 (defconstant +arm64-tte-sh+                 (byte 2 8))
+  14  15 (defconstant +arm64-tte-sh-non-shareable+   0)
+  15  15 (defconstant +arm64-tte-sh-outer-shareable+ 2)
+  16  15 (defconstant +arm64-tte-sh-inner-shareable+ 3)
+  18  15 (defconstant +arm64-tte-attr-index+         (byte 3 2))
+  21  15 (defconstant +arm64-mair-normal-memory+     0)
+  22  15 (defconstant +arm64-mair-device-memory+     2)
+  24  15 (defconstant +arm64-tte-copy-on-write+ #x0080000000000000)
+  25  15 (defconstant +arm64-tte-writable+      #x0100000000000000)
+  26  15 (defconstant +arm64-tte-dirty+         #x0200000000000000)
+  27  15 (defconstant +arm64-tte-address-mask+  #x00007ffffffff000)
+  31  16   (mezzano.lap.arm64:tlbi.vmalle1)
+  32  16   (mezzano.lap.arm64:ret))
+  70  24               (logior +arm64-tte-present+
+  71  24                       +arm64-tte-accessed+
+  72  29                       (dpb +arm64-tte-sh-inner-shareable+
+  73  29                            +arm64-tte-sh+
+  78  16               +arm64-tte-not-block+)
+  80  24               (logior +arm64-tte-writable+
+  84  41                           (logior (dpb +arm64-tte-ap-prw-una+
+  85  41                                        +arm64-tte-ap+
+  87  36                                   +arm64-tte-dirty+)
+  90  33                           (dpb +arm64-tte-ap-pro-una+
+  91  33                                +arm64-tte-ap+
+  93  21               (dpb +arm64-tte-ap-pro-una+
+  94  21                    +arm64-tte-ap+
+  97  16               +arm64-tte-copy-on-write+
+ 100  21                    +arm64-mair-normal-memory+
+ 101  21                    +arm64-mair-device-memory+)
+ 102  17                +arm64-tte-attr-index+
+ 106  16   (logand pte +arm64-tte-address-mask+))
+ 112  54           (setf current-entry (logior current-entry +arm64-tte-writable+))
+ 113  62           (setf current-entry (logand current-entry (lognot +arm64-tte-writable+))))
+ 114  19       (setf (ldb +arm64-tte-ap+ current-entry)
+ 115  14             +arm64-tte-ap-pro-una+))
+ 118  54           (setf current-entry (logior current-entry +arm64-tte-dirty+))
+ 119  62           (setf current-entry (logand current-entry (lognot +arm64-tte-dirty+)))))
+ 127  54           (setf current-entry (logior current-entry +arm64-tte-writable+))
+ 128  62           (setf current-entry (logand current-entry (lognot +arm64-tte-writable+))))
+ 129  19       (setf (ldb +arm64-tte-ap+ current-entry)
+ 130  14             +arm64-tte-ap-pro-una+))
+ 133  54           (setf current-entry (logior current-entry +arm64-tte-dirty+))
+ 134  62           (setf current-entry (logand current-entry (lognot +arm64-tte-dirty+)))))
+ 138  13   (logtest +arm64-tte-present+ pte))
+ 144  13   (logtest +arm64-tte-writable+ pte))
+ 150  13   (logtest +arm64-tte-copy-on-write+ pte))
+ 156  13   (logtest +arm64-tte-dirty+
+ 181  27     (when (logtest entry +arm64-tte-present+)
+ 183  62          with ttl3 = (convert-to-pmap-address (logand entry +arm64-tte-address-mask+))
+ 191  27     (when (logtest entry +arm64-tte-present+)
+ 193  62          with ttl2 = (convert-to-pmap-address (logand entry +arm64-tte-address-mask+))
+ 204  27     (when (logtest entry +arm64-tte-present+)
+ 206  62          with ttl1 = (convert-to-pmap-address (logand entry +arm64-tte-address-mask+))
+
+File: ./supervisor/arm64/snapshot.lisp
+  10  47                                (logand entry +arm64-tte-address-mask+))))
+  11  38                (when (logtest entry +arm64-tte-present+)
+  23  38                (when (logtest entry +arm64-tte-copy-on-write+)
+  25  38                (when (logtest entry +arm64-tte-dirty+)
+
+File: ./supervisor/arm64/platform.lisp
+  49   4   (arm64-fdt-scan t))
+  54   4   (arm64-fdt-scan nil))
+  56   8 (defun arm64-fdt-scan (earlyp)
+
+File: ./supervisor/debug.lisp
+ 278  65                                                               #-arm64 0
+ 279  65                                                               #+arm64 1))))
+
+File: ./supervisor/arm64/interrupts.lisp
+   5  16   (mezzano.lap.arm64:stp :x29 :x30 (:pre :sp -16))
+   7  16   (mezzano.lap.arm64:add :x29 :sp :xzr)
+   9  16   (mezzano.lap.arm64:add :x9 :sp 0)
+  10  16   (mezzano.lap.arm64:orr :x5 :xzr #x200000000000)
+  11  16   (mezzano.lap.arm64:sub :x9 :x9 :x5)
+  12  16   (mezzano.lap.arm64:orr :x5 :xzr #x8000000000)
+  13  16   (mezzano.lap.arm64:subs :xzr :x9 :x5)
+  14  16   (mezzano.lap.arm64:b.hs BAD)
+  15  16   (mezzano.lap.arm64:orr :x5 :xzr :xzr)
+  16  16   (mezzano.lap.arm64:ldp :x29 :x30 (:post :sp 16))
+  18  16   (mezzano.lap.arm64:ret)
+  20  16   (mezzano.lap.arm64:ldr :x0 (:constant "Not on wired stack."))
+  21  16   (mezzano.lap.arm64:movz :x5 #.(ash 1 sys.int::+n-fixnum-bits+))
+  22  16   (mezzano.lap.arm64:named-call panic)
+  23  16   (mezzano.lap.arm64:hlt 0))
+  27  16   (mezzano.lap.arm64:mrs :x9 :daif)
+  28  16   (mezzano.lap.arm64:ldr :x0 (:constant t))
+  29  16   (mezzano.lap.arm64:ands :xzr :x9 :x9)
+  30  16   (mezzano.lap.arm64:csel.ne :x0 :x26 :x0)
+  31  16   (mezzano.lap.arm64:movz :x5 #.(ash 1 sys.int::+n-fixnum-bits+))
+  32  16   (mezzano.lap.arm64:ret))
+  36  16   (mezzano.lap.arm64:msr :daifset #b1111)
+  37  16   (mezzano.lap.arm64:ret))
+  41  16   (mezzano.lap.arm64:msr :daifclr #b1111)
+  42  16   (mezzano.lap.arm64:ret))
+  46  16   (mezzano.lap.arm64:wfi)
+  47  16   (mezzano.lap.arm64:msr :daifclr #b1111)
+  48  16   (mezzano.lap.arm64:ret))
+  52  16   (mezzano.lap.arm64:wfi)
+  53  16   (mezzano.lap.arm64:ret))
+  65  16   (mezzano.lap.arm64:orr :x1 :xzr :x29) ; fp
+  67  16   (mezzano.lap.arm64:stp :x29 :x30 (:pre :sp -16))
+  69  16   (mezzano.lap.arm64:add :x29 :sp :xzr)
+  72  16   (mezzano.lap.arm64:orr :x6 :xzr :x0) ; function
+  73  16   (mezzano.lap.arm64:add :x0 :sp 0) ; sp
+  75  16   (mezzano.lap.arm64:mrs :x9 :daif)
+  76  16   (mezzano.lap.arm64:cbnz :x9 INTERRUPTS-DISABLED)
+  80  16   (mezzano.lap.arm64:msr :daifset #b1111)
+  82  16   (mezzano.lap.arm64:msr :spsel 1)
+  84  16   (mezzano.lap.arm64:ldr :x9 (:object :x6 0))
+  85  16   (mezzano.lap.arm64:blr :x9)
+  90  16   (mezzano.lap.arm64:msr :spsel 0)
+  92  16   (mezzano.lap.arm64:msr :daifclr #b1111)
+  94  16   (mezzano.lap.arm64:ldp :x29 :x30 (:post :sp 16))
+  97  16   (mezzano.lap.arm64:ret)
+ 101  16   (mezzano.lap.arm64:ldr :x9 (:object :x6 0))
+ 102  16   (mezzano.lap.arm64:blr :x9)
+ 104  16   (mezzano.lap.arm64:ldp :x29 :x30 (:post :sp 16))
+ 106  16   (mezzano.lap.arm64:ret))
+ 166  55                      (logtest (page-table-entry pte) +arm64-tte-writable+)
+ 167  33                      (eql (ldb +arm64-tte-ap+ (page-table-entry pte))
+ 168  28                           +arm64-tte-ap-pro-una+))
+ 174  55                                                      +arm64-tte-dirty+))
+ 175  29                 (setf (ldb +arm64-tte-ap+ (page-table-entry pte))
+ 176  24                       +arm64-tte-ap-prw-una+)
+
+File: ./supervisor/arm64/cpu.lisp
+   3  31 (sys.int::defglobal sys.int::*arm64-exception-vector*)
+   4  31 (sys.int::defglobal sys.int::*arm64-exception-vector-base*)
+  10  31                     sys.int::*arm64-exception-vector-base*))
+  16  16   (mezzano.lap.arm64:msr :spsel 1)
+  18  16   (mezzano.lap.arm64:add :x9 :xzr :x0 :asr #.sys.int::+n-fixnum-bits+)
+  20  16   (mezzano.lap.arm64:add :sp :x9 0)
+  22  16   (mezzano.lap.arm64:msr :spsel 0)
+  24  16   (mezzano.lap.arm64:orr :x27 :xzr :x1)
+  26  16   (mezzano.lap.arm64:add :x9 :xzr :x2 :asr #.sys.int::+n-fixnum-bits+)
+  27  16   (mezzano.lap.arm64:msr :vbar-el1 :x9)
+  28  16   (mezzano.lap.arm64:isb)
+  29  16   (mezzano.lap.arm64:ret))
+  33  16   (mezzano.lap.arm64:orr :x0 :xzr :x27)
+  34  16   (mezzano.lap.arm64:movz :x5 #.(ash 1 sys.int::+n-fixnum-bits+))
+  35  16   (mezzano.lap.arm64:ret))
+  53  16   (mezzano.lap.arm64:stp :x5 :x9 (:pre :sp -16))
+  54  16   (mezzano.lap.arm64:stp :x6 :x10 (:pre :sp -16))
+  55  16   (mezzano.lap.arm64:stp :x12 :x11 (:pre :sp -16))
+  56  16   (mezzano.lap.arm64:stp :x1 :x0 (:pre :sp -16))
+  57  16   (mezzano.lap.arm64:stp :x3 :x2 (:pre :sp -16))
+  58  16   (mezzano.lap.arm64:stp :x7 :x4 (:pre :sp -16))
+  59  16   (mezzano.lap.arm64:stp :x14 :x13 (:pre :sp -16))
+  61  16   (mezzano.lap.arm64:str :xzr (:sp #x98))
+  63  16   (mezzano.lap.arm64:mrs :x9 :sp-el0)
+  64  16   (mezzano.lap.arm64:str :x9 (:sp #x90))
+  66  16   (mezzano.lap.arm64:mrs :x9 :elr-el1)
+  67  16   (mezzano.lap.arm64:str :x9 (:sp #x78))
+  69  16   (mezzano.lap.arm64:mrs :x9 :spsr-el1)
+  70  16   (mezzano.lap.arm64:str :x9 (:sp #x88))
+  72  16   (mezzano.lap.arm64:str :x30 (:sp #x80))
+  74  16   (mezzano.lap.arm64:orr :x7 :xzr :x29)
+  75  16   (mezzano.lap.arm64:movz :x5 #.(ash 1 sys.int::+n-fixnum-bits+)) ; 1 arg.
+  77  16   (mezzano.lap.arm64:add :x29 :sp #x70)
+  79  16   (mezzano.lap.arm64:sub :sp :sp 16)
+  80  16   (mezzano.lap.arm64:movz :x9 #.(ash sys.int::+object-tag-interrupt-frame+ sys.int::+object-type-shift+))
+  81  16   (mezzano.lap.arm64:str :x9 (:sp))
+  82  16   (mezzano.lap.arm64:add :x9 :xzr :x29 :lsl #.sys.int::+n-fixnum-bits+)
+  83  16   (mezzano.lap.arm64:str :x9 (:sp 8))
+  84  16   (mezzano.lap.arm64:add :x0 :sp #.sys.int::+tag-object+)
+  88  16   (mezzano.lap.arm64:ldr :x6 (:object :x7 #.sys.int::+fref-function+))
+  90  16   (mezzano.lap.arm64:ldr :x9 (:object :x6 #.sys.int::+function-entry-point+))
+  91  16   (mezzano.lap.arm64:blr :x9)
+  93  16   (mezzano.lap.arm64:add :sp :sp 16)
+  95  16   (mezzano.lap.arm64:ldr :x30 (:sp #x80))
+  97  16   (mezzano.lap.arm64:ldr :x9 (:sp #x88))
+  98  16   (mezzano.lap.arm64:msr :spsr-el1 :x9)
+ 100  16   (mezzano.lap.arm64:ldr :x9 (:sp #x78))
+ 101  16   (mezzano.lap.arm64:msr :elr-el1 :x9)
+ 103  16   (mezzano.lap.arm64:ldr :x9 (:sp #x90))
+ 104  16   (mezzano.lap.arm64:msr :sp-el0 :x9)
+ 106  16   (mezzano.lap.arm64:ldp :x14 :x13 (:post :sp 16))
+ 107  16   (mezzano.lap.arm64:ldp :x7 :x4 (:post :sp 16))
+ 108  16   (mezzano.lap.arm64:ldp :x3 :x2 (:post :sp 16))
+ 109  16   (mezzano.lap.arm64:ldp :x1 :x0 (:post :sp 16))
+ 110  16   (mezzano.lap.arm64:ldp :x12 :x11 (:post :sp 16))
+ 111  16   (mezzano.lap.arm64:ldp :x6 :x10 (:post :sp 16))
+ 112  16   (mezzano.lap.arm64:ldp :x5 :x9 (:post :sp 16))
+ 113  16   (mezzano.lap.arm64:ldr :x29 (:sp))
+ 114  16   (mezzano.lap.arm64:add :sp :sp #x30)
+ 115  16   (mezzano.lap.arm64:eret))
+ 127  16   (mezzano.lap.arm64:stp :x5 :x9 (:pre :sp -16))
+ 128  16   (mezzano.lap.arm64:stp :x6 :x10 (:pre :sp -16))
+ 129  16   (mezzano.lap.arm64:stp :x12 :x11 (:pre :sp -16))
+ 130  16   (mezzano.lap.arm64:stp :x1 :x0 (:pre :sp -16))
+ 131  16   (mezzano.lap.arm64:stp :x3 :x2 (:pre :sp -16))
+ 132  16   (mezzano.lap.arm64:stp :x7 :x4 (:pre :sp -16))
+ 133  16   (mezzano.lap.arm64:stp :x14 :x13 (:pre :sp -16))
+ 135  16   (mezzano.lap.arm64:str :xzr (:sp #x98))
+ 137  16   (mezzano.lap.arm64:add :x9 :sp 0)
+ 138  16   (mezzano.lap.arm64:str :x9 (:sp #x90))
+ 140  16   (mezzano.lap.arm64:mrs :x9 :elr-el1)
+ 141  16   (mezzano.lap.arm64:str :x9 (:sp #x78))
+ 143  16   (mezzano.lap.arm64:mrs :x9 :spsr-el1)
+ 144  16   (mezzano.lap.arm64:str :x9 (:sp #x88))
+ 146  16   (mezzano.lap.arm64:str :x30 (:sp #x80))
+ 148  16   (mezzano.lap.arm64:orr :x7 :xzr :x29)
+ 149  16   (mezzano.lap.arm64:movz :x5 #.(ash 1 sys.int::+n-fixnum-bits+)) ; 1 arg.
+ 151  16   (mezzano.lap.arm64:add :x29 :sp #x70)
+ 153  16   (mezzano.lap.arm64:sub :sp :sp 16)
+ 154  16   (mezzano.lap.arm64:movz :x9 #.(ash sys.int::+object-tag-interrupt-frame+ sys.int::+object-type-shift+))
+ 155  16   (mezzano.lap.arm64:str :x9 (:sp))
+ 156  16   (mezzano.lap.arm64:add :x9 :xzr :x29 :lsl #.sys.int::+n-fixnum-bits+)
+ 157  16   (mezzano.lap.arm64:str :x9 (:sp 8))
+ 158  16   (mezzano.lap.arm64:add :x0 :sp #.sys.int::+tag-object+)
+ 162  16   (mezzano.lap.arm64:ldr :x6 (:object :x7 #.sys.int::+fref-function+))
+ 164  16   (mezzano.lap.arm64:ldr :x9 (:object :x6 #.sys.int::+function-entry-point+))
+ 165  16   (mezzano.lap.arm64:blr :x9)
+ 166  16   (mezzano.lap.arm64:hlt 4))
+ 238  16   (mezzano.lap.arm64:dmb.oshst)
+ 239  16   (mezzano.lap.arm64:ret))
+ 252  16   (mezzano.lap.arm64:add :x9 :xzr :x0 :asr #.sys.int::+n-fixnum-bits+)
+ 253  16   (mezzano.lap.arm64:dc.cvau :x9)
+ 254  16   (mezzano.lap.arm64:ret))
+ 259  16   (mezzano.lap.arm64:add :x9 :xzr :x0 :asr #.sys.int::+n-fixnum-bits+)
+ 260  16   (mezzano.lap.arm64:ic.ivau :x9)
+ 261  16   (mezzano.lap.arm64:ret))
+ 265  16   (mezzano.lap.arm64:dsb.ish)
+ 266  16   (mezzano.lap.arm64:ret))
+ 270  16   (mezzano.lap.arm64:isb)
+ 271  16   (mezzano.lap.arm64:ret))
+ 273   9 (defun %arm64-sync-icache (start length)
+ 292  40      ,@(loop for (name) in mezzano.lap.arm64::*system-registers*
+ 296  38                         (mezzano.lap.arm64:mrs :x9 ,name)
+ 297  38                         (mezzano.lap.arm64:add :x0 :xzr :x9 :lsl #.sys.int::+n-fixnum-bits+)
+ 298  38                         (mezzano.lap.arm64:movz :x5 #.(ash 1 sys.int::+n-fixnum-bits+))
+ 299  38                         (mezzano.lap.arm64:ret))
+ 302  38                         (mezzano.lap.arm64:add :x9 :xzr :x0 :asr #.sys.int::+n-fixnum-bits+)
+ 303  38                         (mezzano.lap.arm64:msr ,name :x9)
+ 304  38                         (mezzano.lap.arm64:ret)))))
+
+File: ./supervisor/arm64/thread.lisp
+   5  16   (mezzano.lap.arm64:msr :spsel 0)
+   6  16   (mezzano.lap.arm64:add :sp :x0 0)
+   8  16   (mezzano.lap.arm64:orr :x29 :xzr :x1)
+   9  16   (mezzano.lap.arm64:orr :x5 :xzr :xzr)
+  10  16   (mezzano.lap.arm64:orr :x0 :x26 :xzr)
+  11  16   (mezzano.lap.arm64:msr :daifclr #b1111)
+  13  16   (mezzano.lap.arm64:ldp :x29 :x30 (:post :sp 16))
+  15  16   (mezzano.lap.arm64:ret))
+  19  16   (mezzano.lap.arm64:add :x12 :x0 (:object-literal #.+thread-fxsave-area+))
+  20  16   (mezzano.lap.arm64:stp :q0 :q1 (:post :x12 32))
+  21  16   (mezzano.lap.arm64:stp :q2 :q3 (:post :x12 32))
+  22  16   (mezzano.lap.arm64:stp :q4 :q5 (:post :x12 32))
+  23  16   (mezzano.lap.arm64:stp :q6 :q7 (:post :x12 32))
+  24  16   (mezzano.lap.arm64:stp :q8 :q9 (:post :x12 32))
+  25  16   (mezzano.lap.arm64:stp :q10 :q11 (:post :x12 32))
+  26  16   (mezzano.lap.arm64:stp :q12 :q13 (:post :x12 32))
+  27  16   (mezzano.lap.arm64:stp :q14 :q15 (:post :x12 32))
+  28  16   (mezzano.lap.arm64:stp :q16 :q17 (:post :x12 32))
+  29  16   (mezzano.lap.arm64:stp :q18 :q19 (:post :x12 32))
+  30  16   (mezzano.lap.arm64:stp :q20 :q21 (:post :x12 32))
+  31  16   (mezzano.lap.arm64:stp :q22 :q23 (:post :x12 32))
+  32  16   (mezzano.lap.arm64:stp :q24 :q25 (:post :x12 32))
+  33  16   (mezzano.lap.arm64:stp :q26 :q27 (:post :x12 32))
+  34  16   (mezzano.lap.arm64:stp :q28 :q29 (:post :x12 32))
+  35  16   (mezzano.lap.arm64:stp :q30 :q31 (:post :x12 32))
+  36  16   (mezzano.lap.arm64:mrs :x9 :fpsr)
+  37  16   (mezzano.lap.arm64:mrs :x10 :fpcr)
+  38  16   (mezzano.lap.arm64:bfi :x9 :x10 32 32)
+  39  16   (mezzano.lap.arm64:movz :x10 (:object-literal #.+thread-state-ss+))
+  40  16   (mezzano.lap.arm64:str :x9 (:x0 :x10))
+  41  16   (mezzano.lap.arm64:ret))
+  45  16   (mezzano.lap.arm64:add :x12 :x0 (:object-literal #.+thread-fxsave-area+))
+  46  16   (mezzano.lap.arm64:ldp :q0 :q1 (:post :x12 32))
+  47  16   (mezzano.lap.arm64:ldp :q2 :q3 (:post :x12 32))
+  48  16   (mezzano.lap.arm64:ldp :q4 :q5 (:post :x12 32))
+  49  16   (mezzano.lap.arm64:ldp :q6 :q7 (:post :x12 32))
+  50  16   (mezzano.lap.arm64:ldp :q8 :q9 (:post :x12 32))
+  51  16   (mezzano.lap.arm64:ldp :q10 :q11 (:post :x12 32))
+  52  16   (mezzano.lap.arm64:ldp :q12 :q13 (:post :x12 32))
+  53  16   (mezzano.lap.arm64:ldp :q14 :q15 (:post :x12 32))
+  54  16   (mezzano.lap.arm64:ldp :q16 :q17 (:post :x12 32))
+  55  16   (mezzano.lap.arm64:ldp :q18 :q19 (:post :x12 32))
+  56  16   (mezzano.lap.arm64:ldp :q20 :q21 (:post :x12 32))
+  57  16   (mezzano.lap.arm64:ldp :q22 :q23 (:post :x12 32))
+  58  16   (mezzano.lap.arm64:ldp :q24 :q25 (:post :x12 32))
+  59  16   (mezzano.lap.arm64:ldp :q26 :q27 (:post :x12 32))
+  60  16   (mezzano.lap.arm64:ldp :q28 :q29 (:post :x12 32))
+  61  16   (mezzano.lap.arm64:ldp :q30 :q31 (:post :x12 32))
+  62  16   (mezzano.lap.arm64:movz :x10 (:object-literal #.+thread-state-ss+))
+  63  16   (mezzano.lap.arm64:ldr :x9 (:x0 :x10))
+  64  16   (mezzano.lap.arm64:ubfx :x10 :x9 32 32)
+  65  16   (mezzano.lap.arm64:msr :fpcr :x10)
+  66  16   (mezzano.lap.arm64:bfi :x9 :xzr 32 32)
+  67  16   (mezzano.lap.arm64:msr :fpsr :x9)
+  68  16   (mezzano.lap.arm64:ret))
+  83  16   (mezzano.lap.arm64:orr :x28 :xzr :x0)
+  84  16   (mezzano.lap.arm64:ret))
+  91  16   (mezzano.lap.arm64:ldr :x1 (:symbol-global-cell *global-thread-lock*))
+  92  16   (mezzano.lap.arm64:ldr :x2 (:constant :unlocked))
+  93  16   (mezzano.lap.arm64:str :x2 (:object :x1 #.sys.int::+symbol-value-cell-value+))
+  95  16   (mezzano.lap.arm64:add :sp :x27 0)
+  96  16   (mezzano.lap.arm64:msr :spsel 0)
+  98  16   (mezzano.lap.arm64:movz :x9 (:object-literal #.+thread-state-rsp+))
+  99  16   (mezzano.lap.arm64:ldr :x9 (:x0 :x9))
+ 100  16   (mezzano.lap.arm64:add :sp :x9 :xzr)
+ 102  16   (mezzano.lap.arm64:movz :x9 (:object-literal #.+thread-state-cs+))
+ 103  16   (mezzano.lap.arm64:ldr :x30 (:x0 :x9))
+ 104  16   (mezzano.lap.arm64:movz :x9 (:object-literal #.+thread-state-rbp+))
+ 105  16   (mezzano.lap.arm64:ldr :x29 (:x0 :x9))
+ 106  16   (mezzano.lap.arm64:movz :x9 (:object-literal #.+thread-state-rflags+))
+ 107  16   (mezzano.lap.arm64:ldr :x9 (:x0 :x9))
+ 108  16   (mezzano.lap.arm64:msr :spsr-el1 :x9)
+ 109  16   (mezzano.lap.arm64:movz :x9 (:object-literal #.+thread-state-rip+))
+ 110  16   (mezzano.lap.arm64:ldr :x9 (:x0 :x9))
+ 111  16   (mezzano.lap.arm64:msr :elr-el1 :x9)
+ 112  16   (mezzano.lap.arm64:movz :x9 (:object-literal #.+thread-interrupt-save-area+))
+ 113  16   (mezzano.lap.arm64:add :x9 :x0 :x9)
+ 114  16   (mezzano.lap.arm64:ldp :x14 :x13 (:post :x9 16))
+ 115  16   (mezzano.lap.arm64:ldp :x7 :x4 (:post :x9 16))
+ 116  16   (mezzano.lap.arm64:ldp :x3 :x2 (:post :x9 16))
+ 117  16   (mezzano.lap.arm64:ldp :x1 :x0 (:post :x9 16))
+ 118  16   (mezzano.lap.arm64:ldp :x12 :x11 (:post :x9 16))
+ 119  16   (mezzano.lap.arm64:ldp :x6 :x10 (:post :x9 16))
+ 120  16   (mezzano.lap.arm64:ldp :x5 :x9 (:x9))
+ 121  16   (mezzano.lap.arm64:eret))
+ 128  16   (mezzano.lap.arm64:ldr :x1 (:symbol-global-cell *global-thread-lock*))
+ 129  16   (mezzano.lap.arm64:ldr :x2 (:constant :unlocked))
+ 130  16   (mezzano.lap.arm64:str :x2 (:object :x1 #.sys.int::+symbol-value-cell-value+))
+ 132  16   (mezzano.lap.arm64:add :sp :x27 0)
+ 133  16   (mezzano.lap.arm64:msr :spsel 0)
+ 135  16   (mezzano.lap.arm64:movz :x9 (:object-literal #.+thread-state-rsp+))
+ 136  16   (mezzano.lap.arm64:ldr :x9 (:x28 :x9))
+ 137  16   (mezzano.lap.arm64:add :sp :x9 0)
+ 139  16   (mezzano.lap.arm64:movz :x9 (:object-literal #.+thread-state-rbp+))
+ 140  16   (mezzano.lap.arm64:ldr :x29 (:x28 :x9))
+ 142  16   (mezzano.lap.arm64:msr :daifclr #b1111)
+ 145  16   (mezzano.lap.arm64:orr :x5 :xzr :xzr)
+ 146  16   (mezzano.lap.arm64:orr :x0 :xzr :x26)
+ 148  16   (mezzano.lap.arm64:ldp :x29 :x30 (:post :sp 16))
+ 149  16   (mezzano.lap.arm64:ret))
+ 153  16   (mezzano.lap.arm64:orr :x0 :xzr :x28)
+ 154  16   (mezzano.lap.arm64:movz :x5 #.(ash 1 sys.int::+n-fixnum-bits+))
+ 155  16   (mezzano.lap.arm64:ret))
+ 182  16   (mezzano.lap.arm64:brk 28))
+ 203  18   (pager-log-op "arm64-partial-save-return-helper " thread " " interrupt-frame)
+ 234  42       ;; Stack must always be aligned on ARM64
+ 264  16   (mezzano.lap.arm64:ldp :x9 :x30 (:post :sp 16))
+ 266  16   (mezzano.lap.arm64:ret))
+
+File: ./supervisor/thread.lisp
+ 160  42   ;; Used to save x30 (link register) on arm64.
+ 164  68   ;; Used to save packed fpsr (low half)/fpcr (high half) state on arm64.
+
+File: ./supervisor/pager.lisp
+ 571  13          ;; ARM64's dirty bit emulation does not support emulating
+ 573  12          #-arm64
+ 582  13          ;; ARM64's dirty bit emulation does not support emulating
+ 584  12          #-arm64
+1137  49   ;; Do the same for the wired function area on arm64, since dirty bit
+1139   5   #+arm64
+
+File: ./compiler/lap-arm64.lisp
+   1   6 ;;;; ARM64 assembler.
+   3  26 (in-package :mezzano.lap.arm64)
+  10  80 (defmethod mezzano.lap:perform-assembly-using-target ((target mezzano.compiler:arm64-target) code-list &rest args &key &allow-other-keys)
+  15  31     (export name :mezzano.lap.arm64))
+  38  13 (defun find-arm64-lap-definitions (name)
+  45  53 (mezzano.extensions:add-find-definitions-hook 'find-arm64-lap-definitions)
+
+File: ./compiler/lap.lisp
+ 340  62                           (position location sys.int::*debug-arm64-register-encodings*)
+
+File: ./compiler/backend/arm64/misc.lisp
+   1  20 ;;;; Miscellaneous ARM64 builtin operations
+   3  39 (in-package :mezzano.compiler.backend.arm64)
+   6  25   (emit (make-instance 'arm64-instruction
+  17  34            (emit (make-instance 'arm64-instruction
+  22  34            (emit (make-instance 'arm64-instruction
+  28  32          (emit (make-instance 'arm64-instruction
+  39  25   (emit (make-instance 'arm64-instruction
+  64  27     (emit (make-instance 'arm64-instruction
+  69  27     (emit (make-instance 'arm64-instruction
+  85  27     (emit (make-instance 'arm64-instruction
+  94  27     (emit (make-instance 'arm64-instruction
+  99  27     (emit (make-instance 'arm64-instruction
+ 106  25   (emit (make-instance 'arm64-instruction
+ 114  39                 (emit (make-instance 'arm64-instruction
+
+File: ./compiler/backend/arm64/memory.lisp
+   3  39 (in-package :mezzano.compiler.backend.arm64)
+  26  27     (emit (make-instance 'arm64-instruction
+  34  27     (emit (make-instance 'arm64-instruction
+  50  34            (emit (make-instance 'arm64-instruction
+  64  34            (emit (make-instance 'arm64-instruction
+  92  34            (emit (make-instance 'arm64-instruction
+  99  32          (emit (make-instance 'arm64-instruction
+ 104  32          (emit (make-instance 'arm64-instruction
+ 109  32          (emit (make-instance 'arm64-branch-instruction
+ 114  32          (emit (make-instance 'arm64-instruction
+ 119  32          (emit (make-instance 'arm64-branch-instruction
+
+File: ./compiler/backend/arm64/number.lisp
+   1  21 ;;;; Number related ARM64 builtin operations
+   3  39 (in-package :mezzano.compiler.backend.arm64)
+   6  25   (emit (make-instance 'arm64-instruction
+  20  34            (emit (make-instance 'arm64-instruction
+  30  34            (emit (make-instance 'arm64-instruction
+  39  34            (emit (make-instance 'arm64-instruction
+  44  27     (emit (make-instance 'arm64-branch-instruction
+  55  27     (emit (make-instance 'arm64-instruction
+  60  27     (emit (make-instance 'arm64-instruction
+  65  27     (emit (make-instance 'arm64-instruction
+  70  27     (emit (make-instance 'arm64-instruction
+  92  32          (emit (make-instance 'arm64-instruction
+ 102  32          (emit (make-instance 'arm64-instruction
+ 111  34            (emit (make-instance 'arm64-instruction
+ 125  34            (emit (make-instance 'arm64-instruction
+ 135  34            (emit (make-instance 'arm64-instruction
+ 144  34            (emit (make-instance 'arm64-instruction
+ 149  27     (emit (make-instance 'arm64-branch-instruction
+ 160  27     (emit (make-instance 'arm64-instruction
+ 165  27     (emit (make-instance 'arm64-instruction
+ 170  27     (emit (make-instance 'arm64-instruction
+ 175  27     (emit (make-instance 'arm64-instruction
+ 197  32          (emit (make-instance 'arm64-instruction
+ 207  32          (emit (make-instance 'arm64-instruction
+ 216  32          (emit (make-instance 'arm64-instruction
+ 223  25   (emit (make-instance 'arm64-instruction
+ 230  25   (emit (make-instance 'arm64-instruction
+ 237  25   (emit (make-instance 'arm64-instruction
+ 244  25   (emit (make-instance 'arm64-instruction
+ 251  25   (emit (make-instance 'arm64-instruction
+ 258  25   (emit (make-instance 'arm64-instruction
+ 265  25   (emit (make-instance 'arm64-instruction
+ 272  25   (emit (make-instance 'arm64-instruction
+ 292  41                   (emit (make-instance 'arm64-instruction
+ 305  34            (emit (make-instance 'arm64-instruction
+ 318  41                   (emit (make-instance 'arm64-instruction
+ 324  41                   (emit (make-instance 'arm64-instruction
+ 329  34            (emit (make-instance 'arm64-instruction
+ 345  34            (emit (make-instance 'arm64-instruction
+ 350  34            (emit (make-instance 'arm64-branch-instruction
+ 355  34            (emit (make-instance 'arm64-instruction
+ 360  34            (emit (make-instance 'arm64-instruction
+ 374  34            (emit (make-instance 'arm64-instruction
+ 379  34            (emit (make-instance 'arm64-instruction
+ 403  34            (emit (make-instance 'arm64-instruction
+ 414  36              (emit (make-instance 'arm64-instruction
+ 439  27     (emit (make-instance 'arm64-instruction
+ 445  27     (emit (make-instance 'arm64-instruction
+ 451  27     (emit (make-instance 'arm64-instruction
+ 457  27     (emit (make-instance 'arm64-instruction
+ 462  27     (emit (make-instance 'arm64-branch-instruction
+ 479  27     (emit (make-instance 'arm64-instruction
+ 522  27     (emit (make-instance 'arm64-instruction
+ 530  27     (emit (make-instance 'arm64-instruction
+ 537  27     (emit (make-instance 'arm64-instruction
+ 554  27     (emit (make-instance 'arm64-instruction
+ 592  41                   (emit (make-instance 'arm64-instruction
+ 611  27     (emit (make-instance 'arm64-instruction
+ 626  27     (emit (make-instance 'arm64-instruction
+ 644  27     (emit (make-instance 'arm64-instruction
+ 659  27     (emit (make-instance 'arm64-instruction
+ 671  27     (emit (make-instance 'arm64-instruction
+ 700  34            (emit (make-instance 'arm64-instruction
+ 712  36              (emit (make-instance 'arm64-instruction
+ 733  34            (emit (make-instance 'arm64-instruction
+ 745  36              (emit (make-instance 'arm64-instruction
+ 780  27     (emit (make-instance 'arm64-instruction
+ 800  27     (emit (make-instance 'arm64-instruction
+ 807  27     (emit (make-instance 'arm64-instruction
+ 827  34            (emit (make-instance 'arm64-instruction
+ 839  36              (emit (make-instance 'arm64-instruction
+ 856  34            (emit (make-instance 'arm64-instruction
+ 868  36              (emit (make-instance 'arm64-instruction
+ 885  34            (emit (make-instance 'arm64-instruction
+ 897  36              (emit (make-instance 'arm64-instruction
+ 920  34            (emit (make-instance 'arm64-instruction
+ 932  36              (emit (make-instance 'arm64-instruction
+ 949  34            (emit (make-instance 'arm64-instruction
+ 959  36              (emit (make-instance 'arm64-instruction
+ 971  34            (emit (make-instance 'arm64-instruction
+ 981  36              (emit (make-instance 'arm64-instruction
+1007  34            (emit (make-instance 'arm64-instruction
+1019  36              (emit (make-instance 'arm64-instruction
+1040  34            (emit (make-instance 'arm64-instruction
+1052  36              (emit (make-instance 'arm64-instruction
+1087  27     (emit (make-instance 'arm64-instruction
+1107  27     (emit (make-instance 'arm64-instruction
+1114  27     (emit (make-instance 'arm64-instruction
+1134  34            (emit (make-instance 'arm64-instruction
+1146  36              (emit (make-instance 'arm64-instruction
+1163  34            (emit (make-instance 'arm64-instruction
+1175  36              (emit (make-instance 'arm64-instruction
+1192  34            (emit (make-instance 'arm64-instruction
+1204  36              (emit (make-instance 'arm64-instruction
+1227  34            (emit (make-instance 'arm64-instruction
+1239  36              (emit (make-instance 'arm64-instruction
+1256  34            (emit (make-instance 'arm64-instruction
+1266  36              (emit (make-instance 'arm64-instruction
+1278  34            (emit (make-instance 'arm64-instruction
+1288  36              (emit (make-instance 'arm64-instruction
+
+File: ./compiler/backend/arm64/cons.lisp
+   1  19 ;;;; Cons related ARM64 builtins.
+   3  39 (in-package :mezzano.compiler.backend.arm64)
+   6  25   (emit (make-instance 'arm64-instruction
+  13  25   (emit (make-instance 'arm64-instruction
+  20  25   (emit (make-instance 'arm64-instruction
+  30  25   (emit (make-instance 'arm64-instruction
+
+File: ./compiler/backend/arm64/target.lisp
+   1  33 ;;;; Target definitions for the ARM64 backend
+   3  39 (in-package :mezzano.compiler.backend.arm64)
+   5  65 (defmethod ra:architectural-physical-registers ((architecture c:arm64-target))
+  16  52 (defmethod ra:target-argument-registers ((target c:arm64-target))
+  19  49 (defmethod ra:target-return-register ((target c:arm64-target))
+  22  50 (defmethod ra:target-funcall-register ((target c:arm64-target))
+  25  48 (defmethod ra:target-count-register ((target c:arm64-target))
+  28  86 (defmethod ra:valid-physical-registers-for-kind ((kind (eql :value)) (architecture c:arm64-target))
+  31  88 (defmethod ra:valid-physical-registers-for-kind ((kind (eql :integer)) (architecture c:arm64-target))
+  35  93 (defmethod ra:valid-physical-registers-for-kind ((kind (eql :single-float)) (architecture c:arm64-target))
+  41  93 (defmethod ra:valid-physical-registers-for-kind ((kind (eql :double-float)) (architecture c:arm64-target))
+  47  81 (defmethod ra:spill/fill-register-kinds-compatible (kind1 kind2 (architecture c:arm64-target))
+  54  93 (defmethod ra:instruction-clobbers ((instruction ir::base-call-instruction) (architecture c:arm64-target))
+  64  97 (defmethod ra:instruction-clobbers ((instruction ir:argument-setup-instruction) (architecture c:arm64-target))
+  74  96 (defmethod ra:instruction-clobbers ((instruction ir:save-multiple-instruction) (architecture c:arm64-target))
+  84  99 (defmethod ra:instruction-clobbers ((instruction ir:restore-multiple-instruction) (architecture c:arm64-target))
+  94  98 (defmethod ra:instruction-clobbers ((instruction ir:forget-multiple-instruction) (architecture c:arm64-target))
+  97  92 (defmethod ra:instruction-clobbers ((instruction ir:nlx-entry-instruction) (architecture c:arm64-target))
+ 107 101 (defmethod ra:instruction-clobbers ((instruction ir:nlx-entry-multiple-instruction) (architecture c:arm64-target))
+ 117  89 (defmethod ra:instruction-clobbers ((instruction ir:values-instruction) (architecture c:arm64-target))
+ 127 102 (defmethod ra:instruction-clobbers ((instruction ir:multiple-value-bind-instruction) (architecture c:arm64-target))
+ 137  89 (defmethod ra:instruction-clobbers ((instruction ir:switch-instruction) (architecture c:arm64-target))
+ 140 101 (defmethod ra:instruction-clobbers ((instruction ir:push-special-stack-instruction) (architecture c:arm64-target))
+ 143 108 (defmethod ra:instruction-clobbers ((instruction ir:flush-binding-cache-entry-instruction) (architecture c:arm64-target))
+ 146  89 (defmethod ra:instruction-clobbers ((instruction ir:unbind-instruction) (architecture c:arm64-target))
+ 149 112 (defmethod ra:instruction-clobbers ((instruction ir:disestablish-block-or-tagbody-instruction) (architecture c:arm64-target))
+ 152 110 (defmethod ra:instruction-clobbers ((instruction ir:disestablish-unwind-protect-instruction) (architecture c:arm64-target))
+ 162 104 (defmethod ra:instruction-clobbers ((instruction ir:make-dx-simple-vector-instruction) (architecture c:arm64-target))
+ 165 103 (defmethod ra:instruction-clobbers ((instruction ir:make-dx-typed-vector-instruction) (architecture c:arm64-target))
+ 168  95 (defmethod ra:instruction-clobbers ((instruction ir:make-dx-cons-instruction) (architecture c:arm64-target))
+ 171  98 (defmethod ra:instruction-clobbers ((instruction ir:make-dx-closure-instruction) (architecture c:arm64-target))
+ 174  99 (defmethod ra:instruction-clobbers ((instruction ir:box-single-float-instruction) (architecture c:arm64-target))
+ 177 101 (defmethod ra:instruction-clobbers ((instruction ir:unbox-single-float-instruction) (architecture c:arm64-target))
+ 180  97 (defmethod ra:allow-memory-operand-p ((instruction ir:call-instruction) operand (architecture c:arm64-target))
+ 188 106 (defmethod ra:allow-memory-operand-p ((instruction ir:call-multiple-instruction) operand (architecture c:arm64-target))
+ 195 102 (defmethod ra:allow-memory-operand-p ((instruction ir:tail-call-instruction) operand (architecture c:arm64-target))
+ 202 100 (defmethod ra:allow-memory-operand-p ((instruction ir:funcall-instruction) operand (architecture c:arm64-target))
+ 211 109 (defmethod ra:allow-memory-operand-p ((instruction ir:funcall-multiple-instruction) operand (architecture c:arm64-target))
+ 219 105 (defmethod ra:allow-memory-operand-p ((instruction ir:tail-funcall-instruction) operand (architecture c:arm64-target))
+ 227 107 (defmethod ra:allow-memory-operand-p ((instruction ir:argument-setup-instruction) operand (architecture c:arm64-target))
+ 230 103 (defmethod ra:allow-memory-operand-p ((instruction ir:finish-nlx-instruction) operand (architecture c:arm64-target))
+ 233 102 (defmethod ra:allow-memory-operand-p ((instruction ir:nlx-entry-instruction) operand (architecture c:arm64-target))
+ 236 111 (defmethod ra:allow-memory-operand-p ((instruction ir:nlx-entry-multiple-instruction) operand (architecture c:arm64-target))
+ 239  99 (defmethod ra:allow-memory-operand-p ((instruction ir:values-instruction) operand (architecture c:arm64-target))
+ 242 112 (defmethod ra:allow-memory-operand-p ((instruction ir:multiple-value-bind-instruction) operand (architecture c:arm64-target))
+ 245  99 (defmethod ra:adjust-register-for-vreg-width ((kind (eql :single-float)) physical (architecture c:arm64-target))
+
+File: ./compiler/backend/arm64/builtin.lisp
+   1   6 ;;;; ARM64 builtin function support
+   3  39 (in-package :mezzano.compiler.backend.arm64)
+ 157  38     (funcall emitter (make-instance 'arm64-instruction
+ 185  30              (make-instance 'arm64-branch-instruction
+
+File: ./compiler/backend/arm64/object.lisp
+   1  32 ;;;; Object and memory related ARM64 builtins.
+   3  39 (in-package :mezzano.compiler.backend.arm64)
+   7  27     (emit (make-instance 'arm64-instruction
+  12  27     (emit (make-instance 'arm64-instruction
+  20  27     (emit (make-instance 'arm64-instruction
+  25  27     (emit (make-instance 'arm64-instruction
+  38  27     (emit (make-instance 'arm64-instruction
+  44  34            (emit (make-instance 'arm64-instruction
+  50  27     (emit (make-instance 'arm64-instruction
+  59  27     (emit (make-instance 'arm64-instruction
+  64  27     (emit (make-instance 'arm64-instruction
+  69  27     (emit (make-instance 'arm64-instruction
+  80  27     (emit (make-instance 'arm64-instruction
+  85  27     (emit (make-instance 'arm64-instruction
+  93  27     (emit (make-instance 'arm64-instruction
+  98  27     (emit (make-instance 'arm64-instruction
+ 109  27     (emit (make-instance 'arm64-instruction
+ 114  27     (emit (make-instance 'arm64-instruction
+ 119  27     (emit (make-instance 'arm64-instruction
+ 142  33           (emit (make-instance 'arm64-instruction
+ 164  46                        (emit (make-instance 'arm64-instruction
+ 175  39                 (emit (make-instance 'arm64-instruction
+ 189  34            (emit (make-instance 'arm64-instruction
+ 203  34            (emit (make-instance 'arm64-instruction
+ 275  27     (emit (make-instance 'arm64-instruction
+ 283  27     (emit (make-instance 'arm64-instruction
+ 295  27     (emit (make-instance 'arm64-instruction
+ 300  27     (emit (make-instance 'arm64-instruction
+ 305  27     (emit (make-instance 'arm64-instruction
+ 315  27     (emit (make-instance 'arm64-instruction
+ 322  27     (emit (make-instance 'arm64-instruction
+ 327  27     (emit (make-instance 'arm64-instruction
+ 332  27     (emit (make-instance 'arm64-instruction
+ 342  25   (emit (make-instance 'arm64-instruction
+ 357  27     (emit (make-instance 'arm64-instruction
+ 365  27     (emit (make-instance 'arm64-instruction
+ 370  27     (emit (make-instance 'arm64-instruction
+ 379  27     (emit (make-instance 'arm64-instruction
+ 384  27     (emit (make-instance 'arm64-instruction
+ 406  27     (emit (make-instance 'arm64-atomic-instruction
+ 422  27     (emit (make-instance 'arm64-atomic-instruction
+ 443  25   (emit (make-instance 'arm64-cas-instruction
+
+File: ./compiler/backend/arm64/codegen.lisp
+   1   6 ;;;; ARM64 code generation
+   3  39 (in-package :mezzano.compiler.backend.arm64)
+ 160 114 (defmethod ir:perform-target-lap-generation (backend-function debug-map spill-locations stack-layout (*target* c:arm64-target))
+ 525  52 (defmethod emit-lap (backend-function (instruction arm64-instruction) uses defs)
+ 526  10   (when (arm64-instruction-prefix instruction)
+ 527  12     (emit (arm64-instruction-prefix instruction)))
+ 529  38                           for op in (arm64-instruction-operands instruction)
+ 539  19     (emit (list* (arm64-instruction-opcode instruction) real-operands))))
+ 541  52 (defmethod emit-lap (backend-function (instruction arm64-branch-instruction) uses defs)
+ 543  37                          for op in (arm64-instruction-operands instruction)
+ 553  26     (emit (append (list (arm64-instruction-opcode instruction))
+ 555  41                   (list (resolve-label (arm64-branch-true-target instruction))))))
+ 557  31               (resolve-label (arm64-branch-false-target instruction)))))
+1218  52 (defmethod emit-lap (backend-function (instruction arm64-atomic-instruction) uses defs)
+1222  32     (emit `(lap:add :x9 :xzr ,(arm64-atomic-index instruction) :lsl ,(- 3 sys.int::+n-fixnum-bits+))
+1232  25           `(lap:ldaxr ,(arm64-atomic-old-value instruction) (:x9)))
+1233  13     (cond ((arm64-instruction-opcode instruction)
+1235  25            (emit (list (arm64-instruction-opcode instruction)
+1236  25                        (arm64-atomic-new-value instruction)
+1237  25                        (arm64-atomic-old-value instruction)
+1238  25                        (arm64-atomic-rhs instruction))
+1240  37                  `(lap:stlxr :w10 ,(arm64-atomic-new-value instruction) (:x9))))
+1244  37            (emit `(lap:stlxr :w10 ,(arm64-atomic-rhs instruction) (:x9)))))
+1250  52 (defmethod emit-lap (backend-function (instruction arm64-cas-instruction) uses defs)
+1255  32     (emit `(lap:add :x9 :xzr ,(arm64-cas-index instruction) :lsl ,(- 3 sys.int::+n-fixnum-bits+))
+1263  23     (emit `(lap:orr ,(arm64-cas-result instruction) :xzr :x26))
+1267  25           `(lap:ldaxr ,(arm64-cas-current-value instruction) (:x9))
+1269  29           `(lap:subs :xzr ,(arm64-cas-current-value instruction) ,(arm64-cas-old-value instruction))
+1272  30           `(lap:stlxr :w10 ,(arm64-cas-new-value instruction) (:x9))
+1278  23     (emit `(lap:ldr ,(arm64-cas-result instruction) (:constant t)))
+
+File: ./compiler/backend/arm64/arm64.lisp
+   1   6 ;;;; ARM64 compiler backend.
+   3  39 (in-package :mezzano.compiler.backend.arm64)
+   5  33 ;;; Wrapper around an arbitrary arm64 instruction.
+   6  11 (defclass arm64-instruction (ir:backend-instruction)
+   9  38    (%opcode :initarg :opcode :reader arm64-instruction-opcode)
+  10  42    (%operands :initarg :operands :reader arm64-instruction-operands)
+  11  42    (%clobbers :initarg :clobbers :reader arm64-instruction-clobbers)
+  12  52    (%early-clobber :initarg :early-clobber :reader arm64-instruction-early-clobber)
+  13  38    (%prefix :initarg :prefix :reader arm64-instruction-prefix))
+  16  50 (defmethod ra:instruction-clobbers ((instruction arm64-instruction) (architecture c:arm64-target))
+  17   4   (arm64-instruction-clobbers instruction))
+  19  78 (defmethod ra:instruction-inputs-read-before-outputs-written-p ((instruction arm64-instruction) (architecture c:arm64-target))
+  20   9   (not (arm64-instruction-early-clobber instruction)))
+  22  51 (defmethod ir:replace-all-registers ((instruction arm64-instruction) substitution-function)
+  35  47 (defmethod ir:print-instruction ((instruction arm64-instruction))
+  37  14           `(:arm64 ,(arm64-instruction-opcode instruction) ,(arm64-instruction-operands instruction))))
+  39  20 ;;; Wrapper around arm64 branch instructions.
+  40  11 (defclass arm64-branch-instruction (ir:terminator-instruction)
+  41  40   ((%opcode :initarg :opcode :accessor arm64-instruction-opcode)
+  42  42    (%operands :initarg :operands :reader arm64-instruction-operands)
+  45  50    (%true-target :initarg :true-target :accessor arm64-branch-true-target)
+  46  52    (%false-target :initarg :false-target :accessor arm64-branch-false-target))
+  49  49 (defmethod ir:successors (function (instruction arm64-branch-instruction))
+  50  10   (list (arm64-branch-true-target instruction)
+  51  10         (arm64-branch-false-target instruction)))
+  53  51 (defmethod ir:replace-all-registers ((instruction arm64-branch-instruction) substitution-function)
+  66  47 (defmethod ir:print-instruction ((instruction arm64-branch-instruction))
+  68  14           `(:arm64-branch ,(arm64-instruction-opcode instruction)
+  69  29                           ,(arm64-instruction-operands instruction)
+  70  29                           ,(arm64-branch-true-target instruction)
+  71  29                           ,(arm64-branch-false-target instruction))))
+  73  11 (defclass arm64-atomic-instruction (ir:backend-instruction)
+  74  38   ((%opcode :initarg :opcode :reader arm64-instruction-opcode)
+  75  46    (%new-value :initarg :new-value :accessor arm64-atomic-new-value)
+  76  46    (%old-value :initarg :old-value :accessor arm64-atomic-old-value)
+  77  38    (%index :initarg :index :accessor arm64-atomic-index)
+  78  34    (%rhs :initarg :rhs :accessor arm64-atomic-rhs)))
+  80  50 (defmethod ra:instruction-clobbers ((instruction arm64-atomic-instruction) (architecture c:arm64-target))
+  83  78 (defmethod ra:instruction-inputs-read-before-outputs-written-p ((instruction arm64-atomic-instruction) (architecture c:arm64-target))
+  87  48 (defmethod ir:instruction-inputs ((instruction arm64-atomic-instruction))
+  88  10   (list (arm64-atomic-index instruction)
+  89  10         (arm64-atomic-rhs instruction)))
+  91  49 (defmethod ir:instruction-outputs ((instruction arm64-atomic-instruction))
+  92  10   (list (arm64-atomic-new-value instruction)
+  93  10         (arm64-atomic-old-value instruction)))
+  95  51 (defmethod ir:replace-all-registers ((instruction arm64-atomic-instruction) substitution-function)
+  96  10   (setf (arm64-atomic-new-value instruction) (funcall substitution-function (arm64-atomic-new-value instruction)))
+  97  10   (setf (arm64-atomic-old-value instruction) (funcall substitution-function (arm64-atomic-old-value instruction)))
+  98  10   (setf (arm64-atomic-index instruction) (funcall substitution-function (arm64-atomic-index instruction)))
+  99  10   (setf (arm64-atomic-rhs instruction) (funcall substitution-function (arm64-atomic-rhs instruction))))
+ 101  47 (defmethod ir:print-instruction ((instruction arm64-atomic-instruction))
+ 103  14           `(:arm64-atomic ,(arm64-instruction-opcode instruction)
+ 104  29                           ,(arm64-atomic-new-value instruction)
+ 105  29                           ,(arm64-atomic-old-value instruction)
+ 106  29                           ,(arm64-atomic-index instruction)
+ 107  29                           ,(arm64-atomic-rhs instruction))))
+ 109  11 (defclass arm64-cas-instruction (ir:backend-instruction)
+ 110  46   ((%new-value :initarg :new-value :accessor arm64-cas-new-value)
+ 111  46    (%old-value :initarg :old-value :accessor arm64-cas-old-value)
+ 112  40    (%result :initarg :result :accessor arm64-cas-result)
+ 113  54    (%current-value :initarg :current-value :accessor arm64-cas-current-value)
+ 114  38    (%index :initarg :index :accessor arm64-cas-index)))
+ 116  50 (defmethod ra:instruction-clobbers ((instruction arm64-cas-instruction) (architecture c:arm64-target))
+ 119  78 (defmethod ra:instruction-inputs-read-before-outputs-written-p ((instruction arm64-cas-instruction) (architecture c:arm64-target))
+ 123  48 (defmethod ir:instruction-inputs ((instruction arm64-cas-instruction))
+ 124  10   (list (arm64-cas-new-value instruction)
+ 125  10         (arm64-cas-old-value instruction)
+ 126  10         (arm64-cas-index instruction)))
+ 128  49 (defmethod ir:instruction-outputs ((instruction arm64-cas-instruction))
+ 129  10   (list (arm64-cas-result instruction)
+ 130  10         (arm64-cas-current-value instruction)))
+ 132  51 (defmethod ir:replace-all-registers ((instruction arm64-cas-instruction) substitution-function)
+ 133  10   (setf (arm64-cas-new-value instruction) (funcall substitution-function (arm64-cas-new-value instruction)))
+ 134  10   (setf (arm64-cas-old-value instruction) (funcall substitution-function (arm64-cas-old-value instruction)))
+ 135  10   (setf (arm64-cas-current-value instruction) (funcall substitution-function (arm64-cas-current-value instruction)))
+ 136  10   (setf (arm64-cas-result instruction) (funcall substitution-function (arm64-cas-result instruction)))
+ 137  10   (setf (arm64-cas-index instruction) (funcall substitution-function (arm64-cas-index instruction))))
+ 139  47 (defmethod ir:print-instruction ((instruction arm64-cas-instruction))
+ 141  14           `(:arm64-cas    ,(arm64-cas-new-value instruction)
+ 142  29                           ,(arm64-cas-old-value instruction)
+ 143  29                           ,(arm64-cas-current-value instruction)
+ 144  29                           ,(arm64-cas-result instruction)
+ 145  29                           ,(arm64-atomic-index instruction)
+ 146  29                           ,(arm64-atomic-rhs instruction))))
+ 173  28            (make-instance 'arm64-instruction
+ 193  67 (defmethod ir:perform-target-lowering (backend-function (target c:arm64-target))
+ 196  76 (defmethod ir:perform-target-lowering-post-ssa (backend-function (target c:arm64-target))
+
+File: ./compiler/backend/register-allocation.lisp
+ 763  33       (mezzano.compiler.backend.arm64::arm64-branch-instruction
+ 764  46        (cond ((eql (mezzano.compiler.backend.arm64::arm64-branch-true-target terminator) target)
+ 765  47               (setf (mezzano.compiler.backend.arm64::arm64-branch-true-target terminator) l))
+ 767  47               (setf (mezzano.compiler.backend.arm64::arm64-branch-false-target terminator) l)))
+
+File: ./compiler/compiler.lisp
+  55  11 (defclass arm64-target (target) ())
+  63   7     (:arm64 (make-instance 'arm64-target))))
+  68   9       #+arm64 :arm64))
+
+File: ./compiler/cross-compile.lisp
+ 592  21                   (:arm64 sys.int::+llf-arch-arm64+))
+1135  24                      (:arm64 (mezzano.compiler.backend.arm64::generate-builtin-functions))))
+
+File: ./compiler/package.lisp
+  18  14            #:arm64-target
+ 128  26 (defpackage :mezzano.lap.arm64
+ 129  20   (:documentation "arm64 assembler for LAP.")
+ 934  39 (defpackage :mezzano.compiler.backend.arm64
+ 936  40   (:local-nicknames (:lap :mezzano.lap.arm64)
+
+File: ./supervisor/video.lisp
+ 200   3 #+arm64
+ 202  16   (mezzano.lap.arm64:add :x12 :xzr :x0 :asr #.sys.int::+n-fixnum-bits+) ; to-storage
+ 203  16   (mezzano.lap.arm64:add :x11 :xzr :x1 :asr #.sys.int::+n-fixnum-bits+) ; from-storage
+ 204  16   (mezzano.lap.arm64:add :x5 :xzr :x2 :asr #.sys.int::+n-fixnum-bits+) ; ncols
+ 205  16   (mezzano.lap.arm64:cbz :x5 OUT)
+ 207  16   (mezzano.lap.arm64:ldr :w9 (:post :x11 4))
+ 208  16   (mezzano.lap.arm64:str :w9 (:post :x12 4))
+ 209  16   (mezzano.lap.arm64:subs :x5 :x5 1)
+ 210  16   (mezzano.lap.arm64:b.ne LOOP)
+ 212  16   (mezzano.lap.arm64:ret))
+ 214  14 #-(or x86-64 arm64)
+ 257   3 #+arm64
+ 259  16   (mezzano.lap.arm64:add :x12 :xzr :x0 :asr #.sys.int::+n-fixnum-bits+) ; to-storage
+ 260  16   (mezzano.lap.arm64:add :x9 :xzr :x1 :asr #.sys.int::+n-fixnum-bits+) ; colour
+ 261  16   (mezzano.lap.arm64:add :x5 :xzr :x2 :asr #.sys.int::+n-fixnum-bits+) ; ncols
+ 262  16   (mezzano.lap.arm64:cbz :x5 OUT)
+ 264  16   (mezzano.lap.arm64:str :w9 (:post :x12 4))
+ 265  16   (mezzano.lap.arm64:subs :x5 :x5 1)
+ 266  16   (mezzano.lap.arm64:b.ne LOOP)
+ 268  16   (mezzano.lap.arm64:ret))
+ 270  14 #-(or x86-64 arm64)
+
+File: ./doc/internals/memory-layout.md
+  42   1 ARM64 branches have a limit of +/-128MB, so the total size of the function
+
+File: ./system/debug.lisp
+  74   5   #+arm64
+  75  15   (elt *debug-arm64-register-encodings* reg))
+
+File: ./system/gc.lisp
+ 438  21                  ;; arm64 uses a link register
+ 439  20                  #-arm64
+ 449  51                  ;; Not all settings are valid in arm64.
+ 450  20                  #+arm64
+ 497   9       #+arm64
+ 544  15       (cond #+arm64
+ 749  21                  ;; arm64 uses a link register
+ 750  20                  #-arm64
+ 760  51                  ;; Not all settings are valid in arm64.
+ 761  20                  #+arm64
+ 802   9       #+arm64
+ 848  15       (cond #+arm64
+ 908  67                                                                 #-arm64 0
+ 909  67                                                                 #+arm64 1)))
+1128   5   #+arm64
+1129   6   ;; ARM64 does not has a direct fast-path yet.
+
+File: ./system/data-types.lisp
+ 319  24 (defconstant +llf-arch-arm64+ 2)
+ 468  16 (defvar *debug-arm64-register-encodings* #(:x0 :x1 :x2 :x3 :x4 :x5 :x6 :x7
+
+File: ./system/disassemble-arm64.lisp
+   1  22 ;;;; DISASSEMBLE for arm64
+   3  34 (defpackage :mezzano.disassemble.arm64
+   6  40                     (:a64 :mezzano.lap.arm64)
+   9  34 (in-package :mezzano.disassemble.arm64)
+  11  11 (defclass arm64-disassembler-context (dis:disassembler-context)
+  14  94 (defmethod dis:make-disassembler-context-using-architecture ((architecture mezzano.compiler::arm64-target) &rest initargs)
+  15  27   (apply #'make-instance 'arm64-disassembler-context initargs))
+  17  11 (defclass arm64-instruction (dis:instruction)
+  21  33 (defmethod dis:inst-size ((inst arm64-instruction)) 4)
+ 103  21     (make-instance 'arm64-instruction
+ 115  21     (make-instance 'arm64-instruction
+ 171  21     (make-instance 'arm64-instruction
+ 208  21     (make-instance 'arm64-instruction
+ 240  54 (defmethod dis:disassemble-one-instruction ((context arm64-disassembler-context))
+ 251  27           (make-instance 'arm64-instruction :opcode :bad :operands (list word decode-kind))))))
+ 253  44 (defmethod dis:print-instruction ((context arm64-disassembler-context) instruction
+
+File: ./system/file-compiler.lisp
+ 166  19                 #+arm64 +llf-arch-arm64+
+ 654  34                                #+arm64 :arm64))
+
+File: ./system/load.lisp
+  64  18     (#.+llf-arch-arm64+ :arm64)
+  69   5   #+arm64 :arm64
+  70  16   #-(or x86-64 arm64)
+
+File: ./ipl.lisp
+ 170   3 #+arm64
+ 177   3 #+arm64
+ 249   3 #-arm64 ; Missing PCI functions.
+ 264  46 (sys.int::cal "sys:source;system;disassemble-arm64.lisp")
+
+File: ./system/environment.lisp
+ 389   5   #+arm64 "arm64")
+ 396   5   #+arm64
+ 570  18                #+arm64
+ 571  70                (let ((builtin (gethash name mezzano.compiler.backend.arm64::*builtins*)))
+ 573  56                    (frob-fn `(mezzano.compiler.backend.arm64::define-builtin ,name
+ 574  61                                  ,(mezzano.compiler.backend.arm64::builtin-lambda-list builtin)
+ 575  59                                ,(mezzano.compiler.backend.arm64::builtin-result-list builtin))
+ 576  55                             (mezzano.compiler.backend.arm64::builtin-generator builtin))))
+
+File: ./system/runtime-support.lisp
+ 612   3 #+arm64
+ 624  25   (mezzano.supervisor::%arm64-sync-icache
+ 721   3 #+arm64
+ 726   3 #+arm64
+
+File: ./system/numbers/bignum-arm64.lisp
+   1   6 ;;;; ARM64 bignum functions
+   7  16   (mezzano.lap.arm64:stp :x29 :x30 (:pre :sp -16))
+   9  16   (mezzano.lap.arm64:add :x29 :sp :xzr)
+  11  16   (mezzano.lap.arm64:stp :x10 :x11 (:pre :sp -16))
+  12  16   (mezzano.lap.arm64:movz :x5 #.(ash 1 sys.int::+n-fixnum-bits+)) ; fixnum 1
+  13  16   (mezzano.lap.arm64:movz :x0 #.(ash 1 sys.int::+n-fixnum-bits+)) ; fixnum 1
+  14  16   (mezzano.lap.arm64:named-call sys.int::%make-bignum-of-length)
+  15  16   (mezzano.lap.arm64:ldp :x10 :x11 (:post :sp 16))
+  16  16   (mezzano.lap.arm64:str :x10 (:object :x0 0))
+  17  16   (mezzano.lap.arm64:movz :x5 #.(ash 1 sys.int::+n-fixnum-bits+)) ; fixnum 1
+  18  16   (mezzano.lap.arm64:add :sp :x29 0)
+  19  16   (mezzano.lap.arm64:ldp :x29 :x30 (:post :sp 16))
+  21  16   (mezzano.lap.arm64:ret))
+  25  16   (mezzano.lap.arm64:stp :x29 :x30 (:pre :sp -16))
+  27  16   (mezzano.lap.arm64:add :x29 :sp :xzr)
+  29  16   (mezzano.lap.arm64:stp :x10 :x11 (:pre :sp -16))
+  30  16   (mezzano.lap.arm64:movz :x5 #.(ash 1 sys.int::+n-fixnum-bits+)) ; fixnum 1
+  31  16   (mezzano.lap.arm64:movz :x0 #.(ash 2 sys.int::+n-fixnum-bits+)) ; fixnum 2
+  32  16   (mezzano.lap.arm64:named-call sys.int::%make-bignum-of-length)
+  33  16   (mezzano.lap.arm64:ldp :x10 :x11 (:post :sp 16))
+  34  16   (mezzano.lap.arm64:str :x10 (:object :x0 0))
+  35  16   (mezzano.lap.arm64:str :x11 (:object :x0 1))
+  36  16   (mezzano.lap.arm64:movz :x5 #.(ash 1 sys.int::+n-fixnum-bits+)) ; fixnum 1
+  37  16   (mezzano.lap.arm64:add :sp :x29 0)
+  38  16   (mezzano.lap.arm64:ldp :x29 :x30 (:post :sp 16))
+  40  16   (mezzano.lap.arm64:ret))
+  44  16   (mezzano.lap.arm64:extr :x10 :x11 :x10 1)
+  45  16   (mezzano.lap.arm64:add :x11 :xzr :x11 :asr 1)
+  48  16   (mezzano.lap.arm64:add :x12 :xzr :x10 :asr 63)
+  50  16   (mezzano.lap.arm64:subs :xzr :x12 :x11)
+  52  16   (mezzano.lap.arm64:b.ne RESULT128)
+  54  16   (mezzano.lap.arm64:named-tail-call sys.int::%%make-bignum-64-x10)
+  57  16   (mezzano.lap.arm64:named-tail-call sys.int::%%make-bignum-128-x10-x11))
+ 287  16   (mezzano.lap.arm64:stp :x29 :x30 (:pre :sp -16))
+ 289  16   (mezzano.lap.arm64:add :x29 :sp :xzr)
+ 292  16   (mezzano.lap.arm64:ands :xzr :x0 #.+fixnum-tag-mask+)
+ 293  16   (mezzano.lap.arm64:b.ne read-bignum-x)
+ 294  16   (mezzano.lap.arm64:add :x12 :xzr :x0 :asr 1)
+ 297  16   (mezzano.lap.arm64:ands :xzr :x1 #.+fixnum-tag-mask+)
+ 298  16   (mezzano.lap.arm64:b.ne read-bignum-y)
+ 299  16   (mezzano.lap.arm64:add :x13 :xzr :x1 :asr 1)
+ 301  16   (mezzano.lap.arm64:umulh :x11 :x12 :x13)
+ 302  16   (mezzano.lap.arm64:madd :x10 :xzr :x12 :x13)
+ 305  16   (mezzano.lap.arm64:stp :x10 :x11 (:pre :sp -16))
+ 306  16   (mezzano.lap.arm64:movz :x5 #.(ash 1 sys.int::+n-fixnum-bits+)) ; fixnum 1
+ 307  16   (mezzano.lap.arm64:movz :x0 #.(ash 3 sys.int::+n-fixnum-bits+)) ; fixnum 2
+ 308  16   (mezzano.lap.arm64:named-call sys.int::%make-bignum-of-length)
+ 309  16   (mezzano.lap.arm64:ldp :x10 :x11 (:post :sp 16))
+ 310  16   (mezzano.lap.arm64:str :x10 (:object :x0 0))
+ 311  16   (mezzano.lap.arm64:str :x11 (:object :x0 1))
+ 312  16   (mezzano.lap.arm64:str :xzr (:object :x0 2))
+ 313  16   (mezzano.lap.arm64:movz :x5 #.(ash 1 sys.int::+n-fixnum-bits+)) ; fixnum 1
+ 314  16   (mezzano.lap.arm64:add :sp :x29 0)
+ 315  16   (mezzano.lap.arm64:ldp :x29 :x30 (:post :sp 16))
+ 317  16   (mezzano.lap.arm64:ret)
+ 320  16   (mezzano.lap.arm64:ldr :x12 (:object :x0 0))
+ 321  16   (mezzano.lap.arm64:b read-y)
+ 323  16   (mezzano.lap.arm64:ldr :x13 (:object :x1 0))
+ 324  16   (mezzano.lap.arm64:b perform-multiply))
+
+File: ./lispos.asd
+  25  37                (:file "compiler/lap-arm64")
+  66  41                (:file "compiler/backend/arm64/arm64")
+  67  41                (:file "compiler/backend/arm64/target")
+  68  41                (:file "compiler/backend/arm64/codegen")
+  69  41                (:file "compiler/backend/arm64/builtin")
+  70  41                (:file "compiler/backend/arm64/misc")
+  71  41                (:file "compiler/backend/arm64/object")
+  72  41                (:file "compiler/backend/arm64/number")
+  73  41                (:file "compiler/backend/arm64/memory")
+  74  41                (:file "compiler/backend/arm64/cons")
+  86  46                (:file "tools/cold-generator2/arm64")))
+
+File: ./system/cold-start.lisp
+ 260  24                      #+arm64 :arm64
+
+File: ./runtime/float-arm64.lisp
+   1   6 ;;;; ARM64 float support functions
+   7  16   (mezzano.lap.arm64:add :x9 :xzr :x0 :lsr 32)
+   8  16   (mezzano.lap.arm64:add :x0 :xzr :x9 :lsl #.sys.int::+n-fixnum-bits+)
+   9  16   (mezzano.lap.arm64:movz :x5 #.(ash 1 sys.int::+n-fixnum-bits+))
+  10  16   (mezzano.lap.arm64:ret))
+  14  16   (mezzano.lap.arm64:add :x0 :xzr :x0 :lsl #.(- 32 sys.int::+n-fixnum-bits+))
+  15  16   (mezzano.lap.arm64:add :x0 :x0 #.(logior sys.int::+tag-immediate+
+  19  16   (mezzano.lap.arm64:movz :x5 #.(ash 1 sys.int::+n-fixnum-bits+))
+  20  16   (mezzano.lap.arm64:ret))
+  26  30                 (mezzano.lap.arm64:add :x9 :xzr :x0 :lsr 32)
+  27  30                 (mezzano.lap.arm64:add :x10 :xzr :x1 :lsr 32)
+  29  30                 (mezzano.lap.arm64:fmov :s0 :w9)
+  30  30                 (mezzano.lap.arm64:fmov :s1 :w10)
+  34  30                 (mezzano.lap.arm64:fmov :w9 :s0)
+  35  30                 (mezzano.lap.arm64:add :x9 :xzr :x9 :lsl 32)
+  36  30                 (mezzano.lap.arm64:add :x0 :x9 #.(logior sys.int::+tag-immediate+
+  40  30                 (mezzano.lap.arm64:movz :x5 #.(ash 1 sys.int::+n-fixnum-bits+))
+  41  30                 (mezzano.lap.arm64:ret))))
+  42  46   (def sys.int::%%single-float-+ mezzano.lap.arm64:fadd)
+  43  46   (def sys.int::%%single-float-- mezzano.lap.arm64:fsub)
+  44  46   (def sys.int::%%single-float-* mezzano.lap.arm64:fmul)
+  45  46   (def sys.int::%%single-float-/ mezzano.lap.arm64:fdiv))
+  50  16   (mezzano.lap.arm64:add :x9 :xzr :x0 :lsr 32)
+  52  16   (mezzano.lap.arm64:fmov :s0 :w9)
+  54  16   (mezzano.lap.arm64:fcvtzs :x9 :s0)
+  56  16   (mezzano.lap.arm64:add :x0 :xzr :x9 :lsl #.sys.int::+n-fixnum-bits+)
+  57  16   (mezzano.lap.arm64:movz :x5 #.(ash 1 sys.int::+n-fixnum-bits+))
+  58  16   (mezzano.lap.arm64:ret))
+  63  16   (mezzano.lap.arm64:add :x9 :xzr :x0 :lsr 32)
+  65  16   (mezzano.lap.arm64:fmov :s0 :w9)
+  67  16   (mezzano.lap.arm64:fcvtns :x9 :s0)
+  69  16   (mezzano.lap.arm64:add :x0 :xzr :x9 :lsl #.sys.int::+n-fixnum-bits+)
+  70  16   (mezzano.lap.arm64:movz :x5 #.(ash 1 sys.int::+n-fixnum-bits+))
+  71  16   (mezzano.lap.arm64:ret))
+  76  16   (mezzano.lap.arm64:add :x9 :xzr :x0 :lsr 32)
+  77  16   (mezzano.lap.arm64:add :x10 :xzr :x1 :lsr 32)
+  79  16   (mezzano.lap.arm64:fmov :s0 :w9)
+  80  16   (mezzano.lap.arm64:fmov :s1 :w10)
+  82  16   (mezzano.lap.arm64:fcmp :s0 :s1)
+  83  16   (mezzano.lap.arm64:ldr :x0 (:constant t))
+  84  16   (mezzano.lap.arm64:csel.cc :x0 :x0 :x26)
+  85  16   (mezzano.lap.arm64:movz :x5 #.(ash 1 sys.int::+n-fixnum-bits+))
+  86  16   (mezzano.lap.arm64:ret))
+  91  16   (mezzano.lap.arm64:add :x9 :xzr :x0 :lsr 32)
+  92  16   (mezzano.lap.arm64:add :x10 :xzr :x1 :lsr 32)
+  94  16   (mezzano.lap.arm64:fmov :s0 :w9)
+  95  16   (mezzano.lap.arm64:fmov :s1 :w10)
+  97  16   (mezzano.lap.arm64:fcmp :s0 :s1)
+  98  16   (mezzano.lap.arm64:ldr :x0 (:constant t))
+  99  16   (mezzano.lap.arm64:csel.eq :x0 :x0 :x26)
+ 100  16   (mezzano.lap.arm64:movz :x5 #.(ash 1 sys.int::+n-fixnum-bits+))
+ 101  16   (mezzano.lap.arm64:ret))
+ 106  16   (mezzano.lap.arm64:add :x9 :xzr :x0 :lsr 32)
+ 108  16   (mezzano.lap.arm64:fmov :s0 :w9)
+ 110  16   (mezzano.lap.arm64:fsqrt :s0 :s0)
+ 112  16   (mezzano.lap.arm64:fmov :w9 :s0)
+ 113  16   (mezzano.lap.arm64:add :x9 :xzr :x9 :lsl 32)
+ 114  16   (mezzano.lap.arm64:add :x0 :x9 #.(logior sys.int::+tag-immediate+
+ 118  16   (mezzano.lap.arm64:movz :x5 #.(ash 1 sys.int::+n-fixnum-bits+))
+ 119  16   (mezzano.lap.arm64:ret))
+ 122  16   (mezzano.lap.arm64:stp :x29 :x30 (:pre :sp -16))
+ 124  16   (mezzano.lap.arm64:add :x29 :sp :xzr)
+ 126  16   (mezzano.lap.arm64:stp :x10 :x11 (:pre :sp -16))
+ 127  16   (mezzano.lap.arm64:movz :x5 #.(ash 4 sys.int::+n-fixnum-bits+)) ; fixnum 4
+ 129  16   (mezzano.lap.arm64:movz :x0 #.(ash sys.int::+object-tag-double-float+
+ 132  16   (mezzano.lap.arm64:orr :x1 :xzr :xzr)
+ 134  16   (mezzano.lap.arm64:movz :x2 #.(ash 1 sys.int::+n-fixnum-bits+)) ; fixnum 1
+ 136  16   (mezzano.lap.arm64:orr :x3 :xzr :x26)
+ 138  16   (mezzano.lap.arm64:named-call %allocate-object)
+ 140  16   (mezzano.lap.arm64:ldp :x10 :x11 (:post :sp 16))
+ 141  16   (mezzano.lap.arm64:str :x10 (:object :x0 0))
+ 143  16   (mezzano.lap.arm64:movz :x5 #.(ash 1 sys.int::+n-fixnum-bits+)) ; fixnum 1
+ 144  16   (mezzano.lap.arm64:add :sp :x29 0)
+ 145  16   (mezzano.lap.arm64:ldp :x29 :x30 (:post :sp 16))
+ 147  16   (mezzano.lap.arm64:ret))
+ 151  16   (mezzano.lap.arm64:add :x9 :xzr :x0 :asr #.sys.int::+n-fixnum-bits+)
+ 152  16   (mezzano.lap.arm64:scvtf :d0 :x9)
+ 153  16   (mezzano.lap.arm64:fmov :x10 :d0)
+ 154  16   (mezzano.lap.arm64:named-tail-call sys.int::%%make-double-float-x10))
+ 161  30                 (mezzano.lap.arm64:ldr :x9 (:object :x0 0))
+ 162  30                 (mezzano.lap.arm64:fmov :d0 :x9)
+ 163  30                 (mezzano.lap.arm64:ldr :x9 (:object :x1 0))
+ 164  30                 (mezzano.lap.arm64:fmov :d1 :x9)
+ 168  30                 (mezzano.lap.arm64:fmov :x10 :d0)
+ 169  30                 (mezzano.lap.arm64:named-tail-call sys.int::%%make-double-float-x10))))
+ 170  46   (def sys.int::%%double-float-+ mezzano.lap.arm64:fadd)
+ 171  46   (def sys.int::%%double-float-- mezzano.lap.arm64:fsub)
+ 172  46   (def sys.int::%%double-float-* mezzano.lap.arm64:fmul)
+ 173  46   (def sys.int::%%double-float-/ mezzano.lap.arm64:fdiv))
+ 178  16   (mezzano.lap.arm64:ldr :x9 (:object :x0 0))
+ 180  16   (mezzano.lap.arm64:fmov :d0 :x9)
+ 182  16   (mezzano.lap.arm64:fcvtzs :x9 :d0)
+ 184  16   (mezzano.lap.arm64:add :x0 :xzr :x9 :lsl #.sys.int::+n-fixnum-bits+)
+ 185  16   (mezzano.lap.arm64:movz :x5 #.(ash 1 sys.int::+n-fixnum-bits+))
+ 186  16   (mezzano.lap.arm64:ret))
+ 191  16   (mezzano.lap.arm64:ldr :x9 (:object :x0 0))
+ 193  16   (mezzano.lap.arm64:fmov :d0 :x9)
+ 195  16   (mezzano.lap.arm64:fcvtns :x9 :d0)
+ 197  16   (mezzano.lap.arm64:add :x0 :xzr :x9 :lsl #.sys.int::+n-fixnum-bits+)
+ 198  16   (mezzano.lap.arm64:movz :x5 #.(ash 1 sys.int::+n-fixnum-bits+))
+ 199  16   (mezzano.lap.arm64:ret))
+ 204  16   (mezzano.lap.arm64:ldr :x9 (:object :x0 0))
+ 205  16   (mezzano.lap.arm64:fmov :d0 :x9)
+ 206  16   (mezzano.lap.arm64:ldr :x9 (:object :x1 0))
+ 207  16   (mezzano.lap.arm64:fmov :d1 :x9)
+ 209  16   (mezzano.lap.arm64:fcmp :d0 :d1)
+ 210  16   (mezzano.lap.arm64:ldr :x0 (:constant t))
+ 211  16   (mezzano.lap.arm64:csel.cc :x0 :x0 :x26)
+ 212  16   (mezzano.lap.arm64:movz :x5 #.(ash 1 sys.int::+n-fixnum-bits+))
+ 213  16   (mezzano.lap.arm64:ret))
+ 218  16   (mezzano.lap.arm64:ldr :x9 (:object :x0 0))
+ 219  16   (mezzano.lap.arm64:fmov :d0 :x9)
+ 220  16   (mezzano.lap.arm64:ldr :x9 (:object :x1 0))
+ 221  16   (mezzano.lap.arm64:fmov :d1 :x9)
+ 223  16   (mezzano.lap.arm64:fcmp :d0 :d1)
+ 224  16   (mezzano.lap.arm64:ldr :x0 (:constant t))
+ 225  16   (mezzano.lap.arm64:csel.eq :x0 :x0 :x26)
+ 226  16   (mezzano.lap.arm64:movz :x5 #.(ash 1 sys.int::+n-fixnum-bits+))
+ 227  16   (mezzano.lap.arm64:ret))
+ 233  16   (mezzano.lap.arm64:ldr :x9 (:object :x0 0))
+ 234  16   (mezzano.lap.arm64:fmov :d0 :x9)
+ 236  16   (mezzano.lap.arm64:fsqrt :d0 :d0)
+ 238  16   (mezzano.lap.arm64:fmov :x10 :d0)
+ 239  16   (mezzano.lap.arm64:named-tail-call sys.int::%%make-double-float-x10))
+ 243  16   (mezzano.lap.arm64:ldr :x9 (:object :x0 0))
+ 244  16   (mezzano.lap.arm64:fmov :d0 :x9)
+ 245  16   (mezzano.lap.arm64:fcvt :s0 :d0)
+ 247  16   (mezzano.lap.arm64:fmov :w9 :s0)
+ 248  16   (mezzano.lap.arm64:add :x9 :xzr :x9 :lsl 32)
+ 249  16   (mezzano.lap.arm64:add :x0 :x9 #.(logior sys.int::+tag-immediate+
+ 253  16   (mezzano.lap.arm64:movz :x5 #.(ash 1 sys.int::+n-fixnum-bits+))
+ 254  16   (mezzano.lap.arm64:ret))
+ 258  16   (mezzano.lap.arm64:add :x9 :xzr :x0 :lsr 32)
+ 259  16   (mezzano.lap.arm64:fmov :s0 :w9)
+ 260  16   (mezzano.lap.arm64:fcvt :d0 :s0)
+ 262  16   (mezzano.lap.arm64:fmov :x10 :d0)
+ 263  16   (mezzano.lap.arm64:named-tail-call sys.int::%%make-double-float-x10))
+
+File: ./runtime/symbol.lisp
+ 146   3 #+arm64
+
+File: ./runtime/runtime-arm64.lisp
+   1   6 ;;;; ARM64 runtime support functions.
+  15  16   (mezzano.lap.arm64:subs :xzr :x5 #.(ash 1 sys.int::+n-fixnum-bits+)) ; fixnum 1
+  16  16   (mezzano.lap.arm64:b.ne BAD-ARGUMENTS)
+  17  16   (mezzano.lap.arm64:stp :x29 :x30 (:pre :sp -16))
+  19  16   (mezzano.lap.arm64:add :x29 :sp :xzr)
+  22  16   (mezzano.lap.arm64:and :x9 :x0 #b1111)
+  23  16   (mezzano.lap.arm64:subs :xzr :x9 #.sys.int::+tag-object+)
+  24  16   (mezzano.lap.arm64:b.ne TYPE-ERROR)
+  25  16   (mezzano.lap.arm64:ldr :x9 (:object :x0 -1))
+  27  16   (mezzano.lap.arm64:ands :xzr :x9 #.(ash (1- (ash 1 sys.int::+object-type-size+))
+  29  16   (mezzano.lap.arm64:b.ne TYPE-ERROR)
+  31  16   (mezzano.lap.arm64:adds :x9 :xzr :x9 :lsr #.sys.int::+object-data-shift+)
+  32  16   (mezzano.lap.arm64:b.eq ZERO-VALUES)
+  33  16   (mezzano.lap.arm64:subs :xzr :x9 #.(+ mezzano.supervisor::+thread-mv-slots-size+
+  35  16   (mezzano.lap.arm64:b.cs TOO-MANY-VALUES)
+  37  16   (mezzano.lap.arm64:orr :x6 :xzr :x0)
+  38  16   (mezzano.lap.arm64:orr :x5 :xzr :xzr)
+  40  16   (mezzano.lap.arm64:add :x5 :x5 #.(ash 1 sys.int::+n-fixnum-bits+)) ; fixnum 1
+  41  16   (mezzano.lap.arm64:ldr :x0 (:object :x6 0))
+  42  16   (mezzano.lap.arm64:subs :xzr :x9 1)
+  43  16   (mezzano.lap.arm64:b.eq DONE)
+  44  16   (mezzano.lap.arm64:add :x5 :x5 #.(ash 1 sys.int::+n-fixnum-bits+)) ; fixnum 1
+  45  16   (mezzano.lap.arm64:ldr :x1 (:object :x6 1))
+  46  16   (mezzano.lap.arm64:subs :xzr :x9 2)
+  47  16   (mezzano.lap.arm64:b.eq DONE)
+  48  16   (mezzano.lap.arm64:add :x5 :x5 #.(ash 1 sys.int::+n-fixnum-bits+)) ; fixnum 1
+  49  16   (mezzano.lap.arm64:ldr :x2 (:object :x6 2))
+  50  16   (mezzano.lap.arm64:subs :xzr :x9 3)
+  51  16   (mezzano.lap.arm64:b.eq DONE)
+  52  16   (mezzano.lap.arm64:add :x5 :x5 #.(ash 1 sys.int::+n-fixnum-bits+)) ; fixnum 1
+  53  16   (mezzano.lap.arm64:ldr :x3 (:object :x6 3))
+  54  16   (mezzano.lap.arm64:subs :xzr :x9 4)
+  55  16   (mezzano.lap.arm64:b.eq DONE)
+  56  16   (mezzano.lap.arm64:add :x5 :x5 #.(ash 1 sys.int::+n-fixnum-bits+)) ; fixnum 1
+  57  16   (mezzano.lap.arm64:ldr :x4 (:object :x6 4))
+  58  16   (mezzano.lap.arm64:subs :xzr :x9 5)
+  59  16   (mezzano.lap.arm64:b.eq DONE)
+  61  16   (mezzano.lap.arm64:add :x12 :x28 #.(+ (- 8 sys.int::+tag-object+)
+  63  16   (mezzano.lap.arm64:movz :x10 #.(+ (- 8 sys.int::+tag-object+)
+  65  16   (mezzano.lap.arm64:movz :x11 5)
+  68  16   (mezzano.lap.arm64:ldr :x7 (:x6 :x10))
+  69  16   (mezzano.lap.arm64:str :x7 (:x12))
+  71  16   (mezzano.lap.arm64:add :x5 :x5 #.(ash 1 sys.int::+n-fixnum-bits+)) ; fixnum 1
+  73  16   (mezzano.lap.arm64:add :x12 :x12 8)
+  74  16   (mezzano.lap.arm64:add :x10 :x10 8)
+  75  16   (mezzano.lap.arm64:add :x11 :x11 1)
+  76  16   (mezzano.lap.arm64:subs :xzr :x11 :x9)
+  77  16   (mezzano.lap.arm64:b.ne UNPACK-LOOP)
+  79  16   (mezzano.lap.arm64:add :sp :x29 0)
+  81  16   (mezzano.lap.arm64:ldp :x29 :x30 (:post :sp 16))
+  83  16   (mezzano.lap.arm64:ret)
+  87  16   (mezzano.lap.arm64:orr :x0 :x26 :xzr)
+  88  16   (mezzano.lap.arm64:orr :x5 :xzr :xzr)
+  89  16   (mezzano.lap.arm64:b DONE)
+  92  16   (mezzano.lap.arm64:ldr :x1 (:constant simple-vector))
+  93  16   (mezzano.lap.arm64:movz :x5 #.(ash 2 sys.int::+n-fixnum-bits+)) ; fixnum 2
+  94  16   (mezzano.lap.arm64:named-call sys.int::raise-type-error)
+  95  16   (mezzano.lap.arm64:hlt 0)
+  97  16   (mezzano.lap.arm64:ldr :x0 (:constant "Too many values in simple-vector ~S."))
+  98  16   (mezzano.lap.arm64:orr :x1 :xzr :x6)
+  99  16   (mezzano.lap.arm64:movz :x5 #.(ash 2 sys.int::+n-fixnum-bits+)) ; fixnum 2
+ 100  16   (mezzano.lap.arm64:named-call error)
+ 101  16   (mezzano.lap.arm64:hlt 0)
+ 104  16   (mezzano.lap.arm64:adr :x6 (+ (- ENTRY-POINT 16) #.sys.int::+tag-object+))
+ 105  16   (mezzano.lap.arm64:ldr :x7 (:function sys.int::raise-invalid-argument-error))
+ 106  16   (mezzano.lap.arm64:ldr :x7 (:object :x7 #.sys.int::+fref-function+))
+ 107  16   (mezzano.lap.arm64:ldr :x9 (:object :x7 #.sys.int::+function-entry-point+))
+ 108  16   (mezzano.lap.arm64:br :x9))
+ 112  16   (mezzano.lap.arm64:stp :x29 :x30 (:pre :sp -16))
+ 114  16   (mezzano.lap.arm64:add :x29 :sp :xzr)
+ 117  16   (mezzano.lap.arm64:orr :x6 :xzr :x0)
+ 119  16   (mezzano.lap.arm64:orr :x5 :xzr :xzr)
+ 121  16   (mezzano.lap.arm64:orr :x12 :xzr :xzr)
+ 123  16   (mezzano.lap.arm64:subs :xzr :x1 :x26)
+ 124  16   (mezzano.lap.arm64:b.eq DO-CALL)
+ 127  16   (mezzano.lap.arm64:orr :x7 :xzr :x1)
+ 131  16   (mezzano.lap.arm64:and :x9 :x7 #b1111)
+ 132  16   (mezzano.lap.arm64:subs :xzr :x9 #.sys.int::+tag-cons+)
+ 133  16   (mezzano.lap.arm64:b.ne LIST-TYPE-ERROR)
+ 135  16   (mezzano.lap.arm64:ldr :x0 (:x7 #.(- #.sys.int::+tag-cons+)))
+ 136  16   (mezzano.lap.arm64:str :x0 (:pre :sp -8))
+ 138  16   (mezzano.lap.arm64:add :x5 :x5 #.(ash 1 sys.int::+n-fixnum-bits+)) ; fixnum 1
+ 141  16   (mezzano.lap.arm64:ldr :x7 (:x7 #.(+ (- #.sys.int::+tag-cons+) 8)))
+ 143  16   (mezzano.lap.arm64:subs :xzr :x7 :x26)
+ 144  16   (mezzano.lap.arm64:b.ne UNPACK-LOOP)
+ 149  16   (mezzano.lap.arm64:add :x9 :sp :xzr)
+ 150  16   (mezzano.lap.arm64:ands :xzr :x9 8)
+ 151  16   (mezzano.lap.arm64:b.ne STACK-ALIGNED)
+ 154  16   (mezzano.lap.arm64:subs :xzr :x5 #.(ash 5 sys.int::+n-fixnum-bits+)) ; fixnum 5
+ 155  16   (mezzano.lap.arm64:b.ls stack-aligned)
+ 157  16   (mezzano.lap.arm64:str :xzr (:pre :sp -8))
+ 159  16   (mezzano.lap.arm64:add :x5 :x5 #.(ash 1 sys.int::+n-fixnum-bits+)) ; fixnum 1
+ 161  16   (mezzano.lap.arm64:add :x12 :x12 #.(ash 1 sys.int::+n-fixnum-bits+)) ; fixnum 1
+ 165  16   (mezzano.lap.arm64:sub :x9 :x5 #.(- (ash -1 sys.int::+n-fixnum-bits+)))
+ 166  16   (mezzano.lap.arm64:add :x9 :xzr :x9 :lsr #.sys.int::+n-fixnum-bits+)
+ 167  16   (mezzano.lap.arm64:add :x9 :xzr :x9 :lsl 3) ; * 8
+ 168  16   (mezzano.lap.arm64:orr :x10 :xzr :xzr)
+ 169  16   (mezzano.lap.arm64:b REVERSE-TEST)
+ 172  16   (mezzano.lap.arm64:ldr :x0 (:sp :x9))
+ 173  16   (mezzano.lap.arm64:ldr :x1 (:sp :x10))
+ 174  16   (mezzano.lap.arm64:str :x1 (:sp :x9))
+ 175  16   (mezzano.lap.arm64:str :x0 (:sp :x10))
+ 177  16   (mezzano.lap.arm64:add :x10 :x10 8)
+ 178  16   (mezzano.lap.arm64:sub :x9 :x9 8)
+ 181  16   (mezzano.lap.arm64:subs :xzr :x9 :x10)
+ 182  16   (mezzano.lap.arm64:b.hi REVERSE-LOOP)
+ 184  16   (mezzano.lap.arm64:sub :x5 :x5 :x12)
+ 187  16   (mezzano.lap.arm64:ldr :x0 (:post :sp 8))
+ 189  16   (mezzano.lap.arm64:subs :xzr :x5 #.(ash 1 sys.int::+n-fixnum-bits+))
+ 190  16   (mezzano.lap.arm64:b.eq do-call)
+ 191  16   (mezzano.lap.arm64:ldr :x1 (:post :sp 8))
+ 193  16   (mezzano.lap.arm64:subs :xzr :x5 #.(ash 2 sys.int::+n-fixnum-bits+))
+ 194  16   (mezzano.lap.arm64:b.eq do-call)
+ 195  16   (mezzano.lap.arm64:ldr :x2 (:post :sp 8))
+ 197  16   (mezzano.lap.arm64:subs :xzr :x5 #.(ash 3 sys.int::+n-fixnum-bits+))
+ 198  16   (mezzano.lap.arm64:b.eq do-call)
+ 199  16   (mezzano.lap.arm64:ldr :x3 (:post :sp 8))
+ 201  16   (mezzano.lap.arm64:subs :xzr :x5 #.(ash 4 sys.int::+n-fixnum-bits+))
+ 202  16   (mezzano.lap.arm64:b.eq do-call)
+ 203  16   (mezzano.lap.arm64:ldr :x4 (:post :sp 8))
+ 208  16   (mezzano.lap.arm64:subs :xzr :x5 #.(ash 5 sys.int::+n-fixnum-bits+))
+ 209  16   (mezzano.lap.arm64:b.ls DO-TAIL-CALL)
+ 210  16   (mezzano.lap.arm64:ldr :x9 (:object :x6 0))
+ 211  16   (mezzano.lap.arm64:blr :x9)
+ 214  16   (mezzano.lap.arm64:add :sp :x29 0)
+ 215  16   (mezzano.lap.arm64:ldp :x29 :x30 (:post :sp 16))
+ 217  16   (mezzano.lap.arm64:ret)
+ 220  16   (mezzano.lap.arm64:add :sp :x29 0)
+ 221  16   (mezzano.lap.arm64:ldp :x29 :x30 (:post :sp 16))
+ 223  16   (mezzano.lap.arm64:ldr :x9 (:object :x6 0))
+ 224  16   (mezzano.lap.arm64:br :x9)
+ 231  16   (mezzano.lap.arm64:add :x9 :sp :xzr)
+ 232  16   (mezzano.lap.arm64:and :x9 :x9 #.(lognot 15))
+ 233  16   (mezzano.lap.arm64:add :sp :x9 :xzr)
+ 234  16   (mezzano.lap.arm64:orr :x0 :xzr :x1)
+ 235  16   (mezzano.lap.arm64:ldr :x1 (:constant sys.int::proper-list))
+ 236  16   (mezzano.lap.arm64:movz :x5 #.(ash 2 sys.int::+n-fixnum-bits+)) ; fixnum 2
+ 237  16   (mezzano.lap.arm64:named-call sys.int::raise-type-error)
+ 238  16   (mezzano.lap.arm64:hlt 0))
+ 245  16   (mezzano.lap.arm64:subs :xzr :x5 #.(ash 2 sys.int::+n-fixnum-bits+)) ; fixnum 2
+ 246  16   (mezzano.lap.arm64:b.ne BAD-ARGUMENTS)
+ 251  16   (mezzano.lap.arm64:subs :xzr :x0 :x1)
+ 252  16   (mezzano.lap.arm64:b.ne MAYBE-NUMBER-CASE)
+ 256  16   (mezzano.lap.arm64:ldr :x0 (:constant t))
+ 257  16   (mezzano.lap.arm64:movz :x5 #.(ash 1 sys.int::+n-fixnum-bits+)) ; fixnum 1
+ 258  16   (mezzano.lap.arm64:ret)
+ 263  16   (mezzano.lap.arm64:sub :x9 :x0 #.sys.int::+tag-object+)
+ 264  16   (mezzano.lap.arm64:ands :xzr :x9 #b1111)
+ 265  16   (mezzano.lap.arm64:b.ne OBJECTS-UNEQUAL)
+ 266  16   (mezzano.lap.arm64:sub :x9 :x1 #.sys.int::+tag-object+)
+ 267  16   (mezzano.lap.arm64:ands :xzr :x9 #b1111)
+ 268  16   (mezzano.lap.arm64:b.ne OBJECTS-UNEQUAL)
+ 271  16   (mezzano.lap.arm64:ldrb :x9 (:object :x0 -1))
+ 272  16   (mezzano.lap.arm64:ldrb :x10 (:object :x1 -1))
+ 273  16   (mezzano.lap.arm64:subs :xzr :x9 :x10)
+ 274  16   (mezzano.lap.arm64:b.ne OBJECTS-UNEQUAL)
+ 276  16   (mezzano.lap.arm64:sub :x9 :x9 #.(ash sys.int::+first-numeric-object-tag+
+ 278  16   (mezzano.lap.arm64:subs :xzr :x9 #.(ash (- sys.int::+last-numeric-object-tag+
+ 281  16   (mezzano.lap.arm64:b.hi OBJECTS-UNEQUAL)
+ 285  16   (mezzano.lap.arm64:subs :xzr :x9 #.(ash (- sys.int::+object-tag-double-float+
+ 288  16   (mezzano.lap.arm64:b.eq COMPARE-DOUBLE-FLOATS)
+ 289  16   (mezzano.lap.arm64:subs :xzr :x9 #.(ash (- sys.int::+object-tag-short-float+
+ 292  16   (mezzano.lap.arm64:b.eq COMPARE-SHORT-FLOATS)
+ 296  16   (mezzano.lap.arm64:named-tail-call sys.int::generic-=)
+ 301  16   (mezzano.lap.arm64:ldrh :x9 (:object :x0 0))
+ 302  16   (mezzano.lap.arm64:ldrh :x10 (:object :x1 0))
+ 303  16   (mezzano.lap.arm64:subs :xzr :x9 :x10)
+ 304  16   (mezzano.lap.arm64:b.eq OBJECTS-EQUAL)
+ 305  16   (mezzano.lap.arm64:b OBJECTS-UNEQUAL)
+ 307  16   (mezzano.lap.arm64:ldr :x9 (:object :x0 0))
+ 308  16   (mezzano.lap.arm64:ldr :x10 (:object :x1 0))
+ 309  16   (mezzano.lap.arm64:subs :xzr :x9 :x10)
+ 310  16   (mezzano.lap.arm64:b.eq OBJECTS-EQUAL)
+ 314  16   (mezzano.lap.arm64:orr :x0 :x26 :xzr)
+ 315  16   (mezzano.lap.arm64:movz :x5 #.(ash 1 sys.int::+n-fixnum-bits+)) ; fixnum 1
+ 316  16   (mezzano.lap.arm64:ret)
+ 319  16   (mezzano.lap.arm64:adr :x6 (+ (- ENTRY-POINT 16) #.sys.int::+tag-object+))
+ 320  16   (mezzano.lap.arm64:ldr :x7 (:function sys.int::raise-invalid-argument-error))
+ 321  16   (mezzano.lap.arm64:ldr :x7 (:object :x7 #.sys.int::+fref-function+))
+ 322  16   (mezzano.lap.arm64:ldr :x9 (:object :x7 #.sys.int::+function-entry-point+))
+ 323  16   (mezzano.lap.arm64:br :x9))
+ 327  16   (mezzano.lap.arm64:subs :xzr :x1 #.(ash (- 63 sys.int::+n-fixnum-bits+)
+ 329  16   (mezzano.lap.arm64:b.hi DO-BIG-SHIFT)
+ 332  16   (mezzano.lap.arm64:asr :x9 :x0 63) ; x9=rdx (sign bits)
+ 334  16   (mezzano.lap.arm64:asr :x10 :x1 #.sys.int::+n-fixnum-bits+)
+ 338  16   (mezzano.lap.arm64:asr :x11 :x0 #.sys.int::+n-fixnum-bits+)
+ 339  16   (mezzano.lap.arm64:movz :x12 #.(- 63 sys.int::+n-fixnum-bits+))
+ 340  16   (mezzano.lap.arm64:sub :x12 :x12 :x10)
+ 341  16   (mezzano.lap.arm64:asr :x11 :x11 :x12)
+ 343  16   (mezzano.lap.arm64:subs :xzr :x9 :x11)
+ 345  16   (mezzano.lap.arm64:b.ne DO-BIG-SHIFT)
+ 347  16   (mezzano.lap.arm64:lsl :x0 :x0 :x10)
+ 348  16   (mezzano.lap.arm64:movz :x5 #.(ash 1 sys.int::+n-fixnum-bits+))
+ 349  16   (mezzano.lap.arm64:ret)
+ 352  16   (mezzano.lap.arm64:named-tail-call %fixnum-left-shift-slow))
+ 369  16   (mezzano.lap.arm64:stp :x29 :x30 (:pre :sp -16))
+ 375  16   (mezzano.lap.arm64:subs :xzr :x5 #.(ash 3 #.sys.int::+n-fixnum-bits+))
+ 376  16   (mezzano.lap.arm64:b.ne SLOW-PATH-BAD-ARGS)
+ 380  16   (mezzano.lap.arm64:ldr :x6 (:symbol-global-cell *general-allocation-count*))
+ 382  16   (mezzano.lap.arm64:ldr :x9 (:object :x6 #.sys.int::+symbol-value-cell-value+))
+ 383  16   (mezzano.lap.arm64:add :x9 :x9 #.(ash 1 sys.int::+n-fixnum-bits+))
+ 384  16   (mezzano.lap.arm64:str :x9 (:object :x6 #.sys.int::+symbol-value-cell-value+))
+ 387  16   (mezzano.lap.arm64:ldr :x6 (:symbol-global-cell *enable-allocation-profiling*))
+ 388  16   (mezzano.lap.arm64:ldr :x4 (:object :x6 #.sys.int::+symbol-value-cell-value+))
+ 389  16   (mezzano.lap.arm64:subs :xzr :x4 :x26)
+ 390  16   (mezzano.lap.arm64:b.ne SLOW-PATH)
+ 392  16   (mezzano.lap.arm64:ldr :x6 (:symbol-global-cell sys.int::*gc-in-progress*))
+ 393  16   (mezzano.lap.arm64:ldr :x4 (:object :x6 #.sys.int::+symbol-value-cell-value+))
+ 394  16   (mezzano.lap.arm64:subs :xzr :x4 :x26)
+ 395  16   (mezzano.lap.arm64:b.ne SLOW-PATH)
+ 397  16   (mezzano.lap.arm64:named-call %do-allocate-from-general-area)
+ 398  16   (mezzano.lap.arm64:subs :xzr :x5 #.(ash 1 #.sys.int::+n-fixnum-bits+))
+ 399  16   (mezzano.lap.arm64:b.ne SLOW-PATH)
+ 401  16   (mezzano.lap.arm64:ldr :x6 (:symbol-global-cell *general-fast-path-hits*))
+ 403  16   (mezzano.lap.arm64:ldr :x9 (:object :x6 #.sys.int::+symbol-value-cell-value+))
+ 404  16   (mezzano.lap.arm64:add :x9 :x9 #.(ash 1 sys.int::+n-fixnum-bits+))
+ 405  16   (mezzano.lap.arm64:str :x9 (:object :x6 #.sys.int::+symbol-value-cell-value+))
+ 406  16   (mezzano.lap.arm64:movz :x5 #.(ash 1 #.sys.int::+n-fixnum-bits+))
+ 407  16   (mezzano.lap.arm64:ldp :x29 :x30 (:post :sp 16))
+ 409  16   (mezzano.lap.arm64:ret)
+ 413  16   (mezzano.lap.arm64:movz :x5 #.(ash 3 #.sys.int::+n-fixnum-bits+))
+ 415  16   (mezzano.lap.arm64:ldp :x29 :x30 (:post :sp 16))
+ 417  16   (mezzano.lap.arm64:named-tail-call %slow-allocate-from-general-area))
+ 425  16   (mezzano.lap.arm64:ldr :x7 (:symbol-global-cell sys.int::*general-area-young-gen-bump*))
+ 426  16   (mezzano.lap.arm64:ldr :x4 (:symbol-global-cell sys.int::*young-gen-newspace-bit-raw*))
+ 427  16   (mezzano.lap.arm64:ldr :x3 (:symbol-global-cell sys.int::*general-area-young-gen-limit*))
+ 430  16   (mezzano.lap.arm64:add :x12 :xzr :x0 :lsl #.(- sys.int::+object-type-shift+ sys.int::+n-fixnum-bits+))
+ 431  16   (mezzano.lap.arm64:add :x12 :x12 :x1 :lsl #.(- sys.int::+object-data-shift+ sys.int::+n-fixnum-bits+))
+ 435  16   (mezzano.lap.arm64:add :x6 :xzr :x2 :lsl 3) ; words * 8
+ 438  16   (mezzano.lap.arm64:add :x9 :x7 #.(+ (- sys.int::+tag-object+) 8 (* sys.int::+symbol-value-cell-value+ 8)))
+ 441  16   (mezzano.lap.arm64:ldaxr :x10 (:x9))
+ 442  16   (mezzano.lap.arm64:add :x11 :x10 :x6)
+ 443  16   (mezzano.lap.arm64:orr :x6 :xzr :x10)
+ 444  16   (mezzano.lap.arm64:stlxr :w10 :x11 (:x9))
+ 445  16   (mezzano.lap.arm64:cbnz :x10 ATOMIC-RETRY)
+ 449  16   (mezzano.lap.arm64:ldr :x10 (:object :x3 #.sys.int::+symbol-value-cell-value+))
+ 450  16   (mezzano.lap.arm64:subs :xzr :x11 :x10)
+ 451  16   (mezzano.lap.arm64:b.hi SLOW-PATH)
+ 454  16   (mezzano.lap.arm64:add :x6 :xzr :x6 :lsr #.sys.int::+n-fixnum-bits+)
+ 457  16   (mezzano.lap.arm64:ldr :x9 (:pc general-address-object-tag))
+ 458  16   (mezzano.lap.arm64:orr :x6 :x6 :x9)
+ 459  16   (mezzano.lap.arm64:ldr :x9 (:object :x4 #.sys.int::+symbol-value-cell-value+))
+ 460  16   (mezzano.lap.arm64:orr :x6 :x6 :x9)
+ 467  16   (mezzano.lap.arm64:str :x12 (:object :x6 -1))
+ 471  16   (mezzano.lap.arm64:orr :x0 :xzr :x6)
+ 472  16   (mezzano.lap.arm64:movz :x5 #.(ash 1 #.sys.int::+n-fixnum-bits+))
+ 473  16   (mezzano.lap.arm64:ret)
+ 475  16   (mezzano.lap.arm64:ldr :x3 (:constant t))
+ 476  16   (mezzano.lap.arm64:movz :x5 #.(ash 4 #.sys.int::+n-fixnum-bits+))
+ 477  16   (mezzano.lap.arm64:ret)
+ 489  16   (mezzano.lap.arm64:ldr :x7 (:symbol-global-cell sys.int::*cons-area-young-gen-bump*))
+ 490  16   (mezzano.lap.arm64:ldr :x4 (:symbol-global-cell sys.int::*young-gen-newspace-bit-raw*))
+ 491  16   (mezzano.lap.arm64:ldr :x3 (:symbol-global-cell sys.int::*cons-area-young-gen-limit*))
+ 495  16   (mezzano.lap.arm64:movz :x6 #.(ash 16 #.sys.int::+n-fixnum-bits+)) ; 16, size of cons
+ 498  16   (mezzano.lap.arm64:add :x9 :x7 #.(+ (- sys.int::+tag-object+) 8 (* sys.int::+symbol-value-cell-value+ 8)))
+ 501  16   (mezzano.lap.arm64:ldaxr :x6 (:x9))
+ 502  16   (mezzano.lap.arm64:add :x11 :x6 #.(ash 16 #.sys.int::+n-fixnum-bits+)) ; 16, size of cons
+ 503  16   (mezzano.lap.arm64:stlxr :w10 :x11 (:x9))
+ 504  16   (mezzano.lap.arm64:cbnz :x10 ATOMIC-RETRY)
+ 508  16   (mezzano.lap.arm64:ldr :x10 (:object :x3 #.sys.int::+symbol-value-cell-value+))
+ 509  16   (mezzano.lap.arm64:subs :xzr :x11 :x10)
+ 510  16   (mezzano.lap.arm64:b.hi SLOW-PATH)
+ 513  16   (mezzano.lap.arm64:add :x6 :xzr :x6 :lsr #.sys.int::+n-fixnum-bits+)
+ 515  16   (mezzano.lap.arm64:ldr :x9 (:pc CONS-ADDRESS-CONS-TAG))
+ 516  16   (mezzano.lap.arm64:orr :x6 :x6 :x9)
+ 517  16   (mezzano.lap.arm64:ldr :x9 (:object :x4 #.sys.int::+symbol-value-cell-value+))
+ 518  16   (mezzano.lap.arm64:orr :x6 :x6 :x9)
+ 523  16   (mezzano.lap.arm64:str :x0 (:car :x6))
+ 524  16   (mezzano.lap.arm64:str :x1 (:cdr :x6))
+ 526  16   (mezzano.lap.arm64:orr :x0 :xzr :x6)
+ 527  16   (mezzano.lap.arm64:movz :x5 #.(ash 1 #.sys.int::+n-fixnum-bits+))
+ 528  16   (mezzano.lap.arm64:ret)
+ 530  16   (mezzano.lap.arm64:ldr :x2 (:constant t))
+ 531  16   (mezzano.lap.arm64:movz :x5 #.(ash 3 #.sys.int::+n-fixnum-bits+))
+ 532  16   (mezzano.lap.arm64:ret)
+ 540  16   (mezzano.lap.arm64:stp :x29 :x30 (:pre :sp -16))
+ 545  16   (mezzano.lap.arm64:subs :xzr :x5 #.(ash 2 #.sys.int::+n-fixnum-bits+))
+ 546  16   (mezzano.lap.arm64:b.ne SLOW-PATH-BAD-ARGS)
+ 550  16   (mezzano.lap.arm64:ldr :x6 (:symbol-global-cell *cons-allocation-count*))
+ 551  16   (mezzano.lap.arm64:ldr :x9 (:object :x6 #.sys.int::+symbol-value-cell-value+))
+ 552  16   (mezzano.lap.arm64:add :x9 :x9 #.(ash 1 sys.int::+n-fixnum-bits+))
+ 553  16   (mezzano.lap.arm64:str :x9 (:object :x6 #.sys.int::+symbol-value-cell-value+))
+ 554  16   (mezzano.lap.arm64:ldr :x6 (:symbol-global-cell *bytes-consed*))
+ 555  16   (mezzano.lap.arm64:ldr :x9 (:object :x6 #.sys.int::+symbol-value-cell-value+))
+ 556  16   (mezzano.lap.arm64:add :x9 :x9 #.(ash 16 sys.int::+n-fixnum-bits+))
+ 557  16   (mezzano.lap.arm64:str :x9 (:object :x6 #.sys.int::+symbol-value-cell-value+))
+ 561  16   (mezzano.lap.arm64:ldr :x6 (:symbol-global-cell *enable-allocation-profiling*))
+ 562  16   (mezzano.lap.arm64:ldr :x6 (:object :x6 #.sys.int::+symbol-value-cell-value+))
+ 563  16   (mezzano.lap.arm64:subs :xzr :x6 :x26)
+ 564  16   (mezzano.lap.arm64:b.ne SLOW-PATH)
+ 567  16   (mezzano.lap.arm64:ldr :x6 (:symbol-global-cell sys.int::*gc-in-progress*))
+ 568  16   (mezzano.lap.arm64:ldr :x6 (:object :x6 #.sys.int::+symbol-value-cell-value+))
+ 569  16   (mezzano.lap.arm64:subs :xzr :x6 :x26)
+ 570  16   (mezzano.lap.arm64:b.ne SLOW-PATH)
+ 572  16   (mezzano.lap.arm64:named-call do-cons)
+ 573  16   (mezzano.lap.arm64:subs :xzr :x5 #.(ash 1 #.sys.int::+n-fixnum-bits+))
+ 574  16   (mezzano.lap.arm64:b.ne SLOW-PATH)
+ 576  16   (mezzano.lap.arm64:ldr :x6 (:symbol-global-cell *cons-fast-path-hits*))
+ 577  16   (mezzano.lap.arm64:ldr :x9 (:object :x6 #.sys.int::+symbol-value-cell-value+))
+ 578  16   (mezzano.lap.arm64:add :x9 :x9 #.(ash 1 sys.int::+n-fixnum-bits+))
+ 579  16   (mezzano.lap.arm64:str :x9 (:object :x6 #.sys.int::+symbol-value-cell-value+))
+ 580  16   (mezzano.lap.arm64:movz :x5 #.(ash 1 #.sys.int::+n-fixnum-bits+))
+ 581  16   (mezzano.lap.arm64:ldp :x29 :x30 (:post :sp 16))
+ 583  16   (mezzano.lap.arm64:ret)
+ 587  16   (mezzano.lap.arm64:movz :x5 #.(ash 2 #.sys.int::+n-fixnum-bits+))
+ 589  16   (mezzano.lap.arm64:ldp :x29 :x30 (:post :sp 16))
+ 591  16   (mezzano.lap.arm64:named-tail-call slow-cons))
+ 597  16   (mezzano.lap.arm64:adds :x0 :x10 :x10)
+ 598  16   (mezzano.lap.arm64:b.vs OVERFLOW)
+ 601  16   (mezzano.lap.arm64:movz :x5 #.(ash 1 sys.int::+n-fixnum-bits+)) ; fixnum 1
+ 602  16   (mezzano.lap.arm64:ret)
+ 606  16   (mezzano.lap.arm64:named-tail-call sys.int::%%make-bignum-64-x10))
+ 612  16   (mezzano.lap.arm64:adds :x0 :x10 :x10)
+ 613  16   (mezzano.lap.arm64:b.cs OVERFLOW)
+ 614  16   (mezzano.lap.arm64:b.vs OVERFLOW)
+ 617  16   (mezzano.lap.arm64:movz :x5 #.(ash 1 sys.int::+n-fixnum-bits+)) ; fixnum 1
+ 618  16   (mezzano.lap.arm64:ret)
+ 622  16   (mezzano.lap.arm64:ands :xzr :x10 :x10)
+ 625  16   (mezzano.lap.arm64:b.mi BIGNUM128)
+ 626  16   (mezzano.lap.arm64:named-tail-call sys.int::%%make-bignum-64-x10)
+ 628  16   (mezzano.lap.arm64:orr :x11 :xzr :xzr)
+ 629  16   (mezzano.lap.arm64:named-tail-call sys.int::%%make-bignum-128-x10-x11))
+ 634  16   (mezzano.lap.arm64:ldr :x0 (:function sys.int::raise-undefined-function))
+ 635  16   (mezzano.lap.arm64:movz :x5 #.(ash 1 sys.int::+n-fixnum-bits+)) ; fixnum 1
+ 636  16   (mezzano.lap.arm64:ret))
+ 647  16   (mezzano.lap.arm64:add :x9 :xzr :x1 :lsl #.(- 3 sys.int::+n-fixnum-bits+))
+ 648  16   (mezzano.lap.arm64:add-imm :x9 :x9 #.(- 8 sys.int::+tag-object+)) ; offset of first slot
+ 650  16   (mezzano.lap.arm64:ldr :x1 (:sp))
+ 652  16   (mezzano.lap.arm64:stp :x4 :x1 (:pre :sp -16))
+ 656  16   (mezzano.lap.arm64:orr :x1 :xzr :x0)
+ 657  16   (mezzano.lap.arm64:add :x9 :x1 :x9)
+ 671  16   (mezzano.lap.arm64:ldaxp :x0 :x4 (:x9))
+ 673  16   (mezzano.lap.arm64:subs :xzr :x0 :x2)
+ 674  16   (mezzano.lap.arm64:b.ne FAIL)
+ 675  16   (mezzano.lap.arm64:subs :xzr :x4 :x3)
+ 676  16   (mezzano.lap.arm64:b.ne FAIL)
+ 678  16   (mezzano.lap.arm64:ldp :x4 :x1 (:sp))
+ 680  16   (mezzano.lap.arm64:stlxp :w10 :x4 :x1 (:x9))
+ 682  16   (mezzano.lap.arm64:cbnz :x10 LOOP)
+ 684  16   (mezzano.lap.arm64:ldr :x0 (:constant t)) ; first return value, T
+ 685  16   (mezzano.lap.arm64:orr :x1 :xzr :x2) ; second return value, old-1
+ 686  16   (mezzano.lap.arm64:orr :x2 :xzr :x3) ; third return value, old-2
+ 687  16   (mezzano.lap.arm64:movz :x5 #.(ash 3 sys.int::+n-fixnum-bits+)) ; three return values
+ 689  16   (mezzano.lap.arm64:add :sp :sp 16)
+ 691  16   (mezzano.lap.arm64:ret)
+ 694  16   (mezzano.lap.arm64:orr :x0 :xzr :x26) ; first return value, NIL
+ 695  16   (mezzano.lap.arm64:orr :x1 :xzr :x0) ; second return value, cur-1
+ 696  16   (mezzano.lap.arm64:orr :x2 :xzr :x4) ; third return value, cur-2
+ 697  16   (mezzano.lap.arm64:movz :x5 #.(ash 3 sys.int::+n-fixnum-bits+)) ; three return values
+ 699  16   (mezzano.lap.arm64:add :sp :sp 16)
+ 701  16   (mezzano.lap.arm64:ret))
+
+File: ./runtime/allocate.lisp
+ 333  14 #-(or x86-64 arm64)
+ 338  14 #-(or x86-64 arm64)
+ 518  14 #-(or x86-64 arm64)
+ 524  14 #-(or x86-64 arm64)
+ 767   9       #+arm64
+ 768  29       (mezzano.supervisor::%arm64-sync-icache
+
+File: ./tools/load-sources.lisp
+  91  27            (member "build-arm64" (pathname-directory path) :test #'string-equal)
+  99  54            (string-equal (pathname-name path) "build-arm64")
+
+File: ./tools/gdb.scm
+  35  37   (let ((f1 (file-write-date "build-arm64/lispos.map"))
+  36  37         (f2 (file-write-date "build-arm64/new.map")))
+  39  37                              "build-arm64/lispos.map"
+  40  37                              "build-arm64/new.map")))
+  42  33            (load-symbols "build-arm64/lispos.map"))
+  44  33            (load-symbols "build-arm64/new.map")))))
+
+File: ./tools/native-cold-generator.lisp
+  28  43 (cal "tools/cold-generator/cold-generator-arm64.lisp")
+
+File: ./tools/image-manip.lisp
+  39  33                             (2 :arm64)
+  48   7     (:arm64 2)))
+
+File: ./tools/cold-generator2/serialize.lisp
+ 292   9       (:arm64
+
+File: ./tools/cold-generator2/cold-generator.lisp
+  27  18     ("supervisor/arm64/cpu.lisp" :arm64)
+  30  18     ("supervisor/arm64/interrupts.lisp" :arm64)
+  31  18     ("supervisor/arm64/gic.lisp" :arm64)
+  34  30     ("supervisor/uart.lisp" :arm64)
+  39  18     ("supervisor/arm64/thread.lisp" :arm64)
+  44  18     ("supervisor/arm64/snapshot.lisp" :arm64)
+  48  18     ("supervisor/arm64/pager.lisp" :arm64)
+  51  18     ("supervisor/arm64/time.lisp" :arm64)
+  73  18     ("supervisor/arm64/platform.lisp" :arm64)
+  76  23     ("runtime/runtime-arm64.lisp" :arm64)
+  82  21     ("runtime/float-arm64.lisp" :arm64)
+ 115  29     ("system/numbers/bignum-arm64.lisp" :arm64)
+ 166  19     "compiler/lap-arm64.lisp"
+ 209  23     "compiler/backend/arm64/arm64.lisp"
+ 210  23     "compiler/backend/arm64/target.lisp"
+ 211  23     "compiler/backend/arm64/codegen.lisp"
+ 212  23     "compiler/backend/arm64/builtin.lisp"
+ 213  23     "compiler/backend/arm64/misc.lisp"
+ 214  23     "compiler/backend/arm64/object.lisp"
+ 215  23     "compiler/backend/arm64/number.lisp"
+ 594  19     ;;"supervisor/arm64/cpu.lisp" fixme
+
+File: ./tools/cold-generator2/write.lisp
+  80  15             (:arm64 sys.int::+llf-arch-arm64+)))
+
+File: ./tools/cold-generator2/load.lisp
+  41  39                 (#.sys.int::+llf-arch-arm64+ :arm64)
+
+File: ./tools/cold-generator2/arm64.lisp
+   1   6 ;;;; ARM64 target support
+   3  37 (defpackage :mezzano.cold-generator.arm64
+  10  42                     (#:lap #:mezzano.lap.arm64)
+  14  37 (in-package :mezzano.cold-generator.arm64)
+  27  67 (defmethod configure-system-for-target (environment (target (eql :arm64)))
+  35  56   (setf (env:cross-symbol-value environment 'sys.int::*arm64-exception-vector*)
+  40  43                          :name 'sys.int::*arm64-exception-vector*)))
+  42  81 (defmethod ser:post-serialize-image-for-target (image environment (target (eql :arm64)))
+  43  65   (let* ((ex-vec (env:cross-symbol-value environment 'sys.int::*arm64-exception-vector*))
+  50  65     (setf (ser::image-symbol-value image environment 'sys.int::*arm64-exception-vector-base*)
+
+rg finished (1453 matches found) at Fri Apr 19 09:27:04
+
+#+end_src
+
+In the provided snippet, =#+arm64= is a Lisp reader conditional that
+checks if the feature =arm64= is present in the =*features*= list. If
+=arm64= is present, it includes or evaluates the following expression
+or code block. This mechanism allows for conditional compilation or
+loading of code depending on the system or environment features. 
+
+**** Where is it defined
+:PROPERTIES:
+:ID:       8F5C2A77-3A8E-44B3-8682-EE444C44E380
+:END:
+
+The =#+arm64= directive doesn't itself define the =arm64= feature; it
+conditionally includes the subsequent code if the =arm64= feature is
+already present in the =*features*= list. The actual definition of the
+=arm64= feature (i.e., the addition of =arm64= to the =*features*=
+list) typically happens in one of the following ways: 
+
+1. *Initialization at Startup:** Lisp implementations often
+   automatically populate the =*features*= list based on the host
+   environment at startup. This includes detecting the CPU
+   architecture and adding the corresponding feature keyword (such as
+   =arm64= for ARM 64-bit architecture). 
+
+2. *Manual Addition:** Developers can manually add a feature to the
+   =*features*= list by evaluating =(push :arm64 *features*)=. This
+   manual addition could be done in the Lisp implementation's
+   initialization files (e.g., =.sbclrc= for SBCL) or within a
+   project's codebase if certain conditions are met. 
+
+3. *Build Scripts or Configuration:** For projects that are compiled
+   or built using build scripts (e.g., using ASDF, Lisp's system
+   definition facility), the build script might conditionally add
+   features to =*features*= based on command-line arguments or
+   configuration files. 
+
+4. *Implementation-specific Code:** Some Lisp implementations might
+   include architecture-specific code that, upon execution,
+   automatically adds relevant features to the =*features*= list. This
+   code typically runs early during the Lisp system's startup
+   sequence. 
+
+To determine where the =arm64= feature is specifically defined for
+your situation, you would need to look at the Lisp implementation's
+startup code, any relevant build scripts or configurations, or manual
+additions in initialization files or project code. Unfortunately,
+without more context about the environment or how Lisp is being
+launched in this case, it's difficult to provide a precise location. 
+
+**** How can such features be declared so we can insert conditional compilation
+:PROPERTIES:
+:ID:       7C8BA41E-020A-4E92-8676-7635B99C1B5C
+:END:
+
+Yes, in Common Lisp, you can declare your own features for the purpose
+of conditional compilation. This is done through the manipulation of
+the =*features*= list, which is a list of symbols where each symbol
+represents a specific feature that might affect compilation or loading
+of code.
+
+Here's how you can do it:
+
+***** Adding a Feature
+
+To add your own feature, use the =push= function if the feature isn't
+already present in the list:
+
+#+begin_src lisp
+(unless (member :my-feature *features*) (push :my-feature *features*))
+#+end_src
+
+***** Using Your Feature for Conditional Compilation
+
+Once your feature is in the =*features*= list, you can use it
+similarly to =#+arm64=:
+
+#+begin_src lisp
+#+my-feature (do-something-specific-to-my-feature)
+
+#-my-feature (do-something-else)
+#+end_src
+
+In this example, the code wrapped by =#+my-feature= is only compiled
+or loaded if =:my-feature= is present in the =*features*= list, while
+the =#-my-feature= part is only compiled or loaded if =:my-feature= is
+not in the list.
+
+***** Removing a Feature
+
+If you need to remove a feature (for instance, in a dynamic
+environment where you might want to insert and remove features based
+on conditions at runtime), you can do so using the =remove= function:
+
+#+begin_src lisp
+(setf *features* (remove :my-feature *features*))
+#+end_src
+
+***** Practical Use
+
+This capability allows you to tailor the behavior of your Lisp system
+or application based on the presence or absence of specific features,
+which can be very useful for accommodating differences in environment,
+platform, or configuration within your codebase in a clean and
+manageable way.
+

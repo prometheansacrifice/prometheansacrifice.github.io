@@ -1,0 +1,142 @@
+#+OPTIONS: num:nil
+#+OPTIONS: toc:nil
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="css/styles.css" />
+#+HTML_HEAD_EXTRA: <link rel="preconnect" href="https://fonts.googleapis.com">
+#+HTML_HEAD_EXTRA: <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+#+HTML_HEAD_EXTRA: <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400&display=swap" rel="stylesheet">
+#+HTML_HEAD_EXTRA: <link rel="alternate" type="application/rss+xml" href="https://prometheansacrifice.sh/index.xml" title="RSS feed for https://prometheansacrifice.sh/">
+
+#+BEGIN_EXPORT html
+<header>
+  <h1>prometheansacrifice</h1>
+  <p>Running notes. Daily logs</p>
+</header>
+#+END_EXPORT  
+
+*  GPT: Unused variables in common lisp
+:PROPERTIES:
+:html_container: article
+:html_container_class: psac-article
+:END:
+
+For the following,
+
+#+begin_src lisp
+  (trivia:match head
+    ((list k v) (if (eq k key) position (alist--find (+ position 1) key tail)))
+#+end_src
+
+
+I get the following from sbcl
+
+#+begin_src lisp 
+;                                                                             
+; caught STYLE-WARNING:                                                       
+;   The variable V is defined but never used. 
+#+end_src
+
+
+If I remove v, then the structure changes. In OCaml I can use
+underscore to mark intentionally unused variables and preserve
+structure. How can I do this in common lisp.
+
+In Common Lisp, you can use an underscore (=_=) to mark intentionally
+unused variables, similar to OCaml, but it's not a language-enforced
+convention for unused variables. Common Lisp doesn't treat =_=
+specially; it's just a valid symbol name. However, it's a common
+convention in Lisp code to either use =_= for unused variables or,
+more commonly, prefix the variable name with an underscore (e.g.,
+=_v=) to indicate it's intentionally unused. 
+
+Since Common Lisp doesn't enforce specific rules about variable names
+for unused variables, you're free to use =_=, =_v=, or even a
+descriptive name prefixed by an underscore if you want to document the
+purpose of the variable despite not using it. Using such conventions
+helps other developers understand that the variable is knowingly
+unused. 
+
+For your example, you could replace =v= with =_= or =_v=:
+
+#+begin_src lisp
+(trivia:match head
+  ((list k _v) (if (eq k key) position (alist--find (+ position 1) key tail)))
+...
+#+end_src
+or
+
+#+begin_src lisp
+(trivia:match head
+  ((list k _unused) (if (eq k key) position (alist--find (+ position 1) key tail)))
+...
+#+end_src
+
+Just keep in mind that since =_= is just another symbol, if you use it
+multiple times in the same scope, you're actually creating multiple
+bindings to the same variable name, which might not be what you want
+and could lead to warnings from your Lisp environment about shadowed
+variable definitions. In those cases, using something like =_unused1=,
+=_unused2=, or more descriptive names can help avoid such issues. 
+
+A more robust way to suppress warnings for unused variables in SBCL
+and other Common Lisp compilers is to use the =declare= construct with
+=ignore=. This explicitly tells the compiler that the variable is
+intentionally unused and no warning should be issued for it. Here's
+how you can apply it to your example: 
+
+#+begin_src lisp
+(trivia:match head
+  ((list k v) 
+   (declare (ignore v)) ; explicitly ignore the unused variable
+   (if (eq k key) position (alist--find (+ position 1) key tail))))
+#+end_src
+
+Adding =(declare (ignore v))= directly inside the pattern-matching clause tells the compiler that =v= is intentionally not used in the code that follows, and this should prevent the warning from being issued.
+
+In Common Lisp, the =declare= expression is used to provide the
+compiler with additional information about the code, typically
+concerning optimization settings, data types of variables, or variable
+usage (among other aspects). These declarations can influence the
+compilation process, potentially leading to more efficient code, or in
+some cases, they are used simply to inform the compiler of programmer
+intentions, such as which variables are intentionally unused. 
+
+Declarations do not change the semantics of the program but can lead
+to warnings if the declared intentions are violated (e.g., using a
+variable declared as ignored). 
+
+The syntax for =declare= is:
+#+begin_src lisp
+(declare declaration-specifier*)
+#+end_src
+Each =declaration-specifier= can be about optimization levels (like
+=speed=, =space=), type declarations (like =(type list x)=), or usage
+declarations (like =(ignore x)=). 
+
+Examples:
+
+1. *Optimization Declaration*: Optimizing for speed over size.
+#+begin_src lisp
+(defun my-fast-function (x)
+  (declare (optimize (speed 3) (space 0)))
+  ;; Function definition here
+)
+#+end_src
+
+2. *Type Declaration*: Specifying the type of variables.
+#+begin_src lisp
+(defun compute (x y)
+  (declare (type integer x y))
+  ;; Assuming x and y should only be integers.
+)
+#+end_src
+
+3. *Ignoring Unused Variables*: Informing the compiler that certain variables are intentionally unused, which is especially relevant for the context you're asking about.
+#+begin_src lisp
+(defun example (a b)
+  (declare (ignore b)) ; Tells the compiler that `b` is intentionally not used.
+  ;; Code that only uses `a`.
+)
+#+end_src
+
+Using =declare= correctly can help write more efficient and clearer code by leveraging the compiler's capabilities and by making certain aspects of the code's intention explicit.
+

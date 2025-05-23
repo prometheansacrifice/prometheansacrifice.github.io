@@ -1,0 +1,853 @@
+#+OPTIONS: num:nil
+#+OPTIONS: toc:nil
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="css/styles.css" />
+#+HTML_HEAD_EXTRA: <link rel="preconnect" href="https://fonts.googleapis.com">
+#+HTML_HEAD_EXTRA: <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+#+HTML_HEAD_EXTRA: <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400&display=swap" rel="stylesheet">
+#+HTML_HEAD_EXTRA: <link rel="alternate" type="application/rss+xml" href="https://prometheansacrifice.sh/index.xml" title="RSS feed for https://prometheansacrifice.sh/">
+
+#+BEGIN_EXPORT html
+<header>
+  <h1>prometheansacrifice</h1>
+  <p>Running notes. Daily logs</p>
+</header>
+#+END_EXPORT  
+
+* Logs
+:PROPERTIES:
+:html_container: section
+:html_container_class: psac-logs
+:END:
+
+** This tip about redirecting eshell to org-capture was interesting
+#+PROPERTY: PUBDATE 2025-04-23 Wed 10:37
+https://www.masteringemacs.org/article/complete-guide-mastering-eshell
+
+** Package managers have to resilient to tarball formats
+#+PROPERTY: PUBDATE 2024-10-21 Mon
+
+[[./package-managers-tarball-formats.org]]
+
+**  Mongo aggregation framework: Why does it exist? How is it different from queries?
+#+PROPERTY: PUBDATE 2025-01-16 Thu 11:45
+
+It's an attempt to have analytics in db itself. Spark and Hadoop dont
+have storage and transfer from db to hadoop/spark can be slow. Why not
+have it in the db itself?
+
+
+Querries are simple filtering. Aggregation brings more computational
+power to queries
+
+After aggregation, usually a smaller amount of data moves to application
+
+**  json-parse-buffer undefined
+#+PROPERTY: PUBDATE 2024-11-15 Fri 13:22
+https://github.com/blahgeek/emacs-devdocs-browser/issues/3
+
+** FDA warning letters
+#+PROPERTY: PUBDATE 2024-11-06 Wed 08:19
+https://www.fda.gov/inspections-compliance-enforcement-and-criminal-investigations/compliance-actions-and-activities/warning-letters
+
+** Krisp noise supression and Deep Noise Suppression
+#+PROPERTY: PUBDATE 2024-10-30 Wed 18:36
+
+[[./krisp-noise-suppression.org]]
+
+**  sources of a package in ocaml
+#+PROPERTY: PUBDATE 2024-10-16 Wed 14:17
+1. Stdlib: eg unix
+2. Ppam repo of packages
+3. Pinned: git URLs or local paths
+
+** Then parse the command args
+#+PROPERTY: PUBDATE 2024-09-10 Tue 20:35
+=ocaml/merlin/src/frontend/ocamlmerlin/new/new_merlin.ml::main@{2024-09-10}::87]=
+#+BEGIN_SRC
+          let config, command_args =
+            Mconfig.parse_arguments
+              ~wd:(Sys.getcwd ()) ~warning:(fun w -> fails := w :: !fails)
+              (List.map snd spec) raw_args Mconfig.initial command_args
+#+END_SRC
+
+** esy binary wrappers and statically linked binaries
+:PROPERTIES:
+
+:PUBDATE:  2024-08-27 Tue 17:13
+:END:
+
+CI pipeline used `--no-env` for Linux pipeline and re-used most of the setup for other platforms.
+
+It appears, now,  statically linked esy binaries have to be published
+without the sandbox wrapper. We see problems when the sandbox wrapper
+tries to launch the esy process - it uses `execve` specifies the
+environment. If we don't specify the environment, as in `--no-env`,
+and directly exec, the running esy binary directly assumes the bash
+processes environment variables.
+
+#+begin_src fundamental
+bash --(fork)--> esy wrapper --(exec)--> real binary +
+  |                                                  |
+  +-------(exec)--+-----(exec)-----------------------+
+#+end_src
+
+
+This breaks how we resolve =esySolveCudfCommand= and other
+executables - we resolve them relative to =$_ -> /proc/self/exe -> Sys.argv=
+
+More importantly, =--no-env= has no purpose with the wrapper
+program. It would make the wrapper a no-op binary wrapper.
+
+We have to be careful while providing sandbox environment (TODO document this)
+
+If all the dependencies of esy are not present in the sandbox (git and
+curl are not), then things may not work reliably. We saw this when we
+were using esy release ourselves the wrapped esy, curl spawned by esy
+needed `musl`  library but was of course not available in the
+environment (because we didn't package it). It looks as if --no-env is
+not the best trick to be able to use the existing pipeline
+infrastructure at the same time ship static binaries. 
+
+All this could be real pain points for users coming on to Reason/OCaml
+and not being familiar with native compilation and devops
+associated. esy should ideally provide better guidelines and framework
+for CI setups 
+
+
+** I was wondering, whats the difference between using t('a) and t(a) where a is instantiated by a Functor application
+#+PROPERTY: PUBDATE 2024-06-17 Mon 14:58
+
+Should it be,
+#+BEGIN_SRC reason
+  module type APP = {
+    type route = list(string);
+    type session;
+    type action('view);
+    let isValidSession: session => bool;
+    let route: (session, route) => action('view);
+  };
+#+END_SRC
+
+Or, 
+
+#+BEGIN_SRC reason
+  module type APP = {
+    type route = list(string);
+    type session;
+    type view;
+    type action(view);
+    let isValidSession: session => bool;
+    let route: (session, route) => action('view);
+  };
+#+END_SRC
+   
+Where, =view= is type later instantiated by the Functor application.
+
+#+begin_src reason
+  module App = Make(blah...) with type view  = someFunctorisedType.
+#+end_src
+
+
+Answer: a separate =type view=
+
+Because if you dont, and if you do, =action('view)=, when you create
+=App= without the functor, you'll end up with
+
+#+BEGIN_SRC reason
+module App: APP = {
+  type route = list(string);
+  type session = bool;
+  type action(string) =
+    | UI(string)
+    | Redirect(route);
+  let isValidSession = session => session;
+  let route = (session, route) => {
+    switch((isValidSession(session), route)) {
+    | (true, []) => UI("home")
+    | (false, []) => Redirect(["login"])
+    }
+  };
+}
+#+END_SRC
+
+... which makes no sense.
+
+This happeneded because, you initially started out trying to
+functorise away =view= Not just make =action= polymorphic.
+
+Polymorphic =action= signifies that action is a shape whose details
+dont matter. Functorised action isn't like this.
+
+** Server React and client react dont agree on Suspense signature
+#+PROPERTY: PUBDATE 2024-06-14 Fri 15:52
+
+#+BEGIN_SRC ocaml
+module Suspense = struct
+  let or_react_null = function None -> null | Some x -> x
+
+  let make ?fallback ?children () =
+    Suspense
+      { fallback = or_react_null fallback; children = or_react_null children }
+end
+#+END_SRC
+
+#+begin_src reason
+module Suspense: {
+  [@mel.obj]
+  external makeProps:
+    (~children: element=?, ~fallback: element=?, unit) =>
+    {
+      .
+      "children": option(element),
+      "fallback": option(element),
+    };
+  [@mel.module "react"]
+  external make:
+    component({
+      .
+      "children": option(element),
+      "fallback": option(element),
+    }) =
+    "Suspense";
+};
+#+end_src
+
+** Example of type signature of function with optional param
+#+PROPERTY: PUBDATE 2024-06-14 Fri 09:08
+=file:/dream-web-server-sessions/bin/main.re::(~error:string=?, unit) => React.element=
+#+BEGIN_SRC
+(~error:string=?, unit) => React.element#+END_SRC
+** Disabling Dream webserver's deprecation
+#+PROPERTY: PUBDATE 2024-06-14 Fri 09:00
+=file:dream-web-server-sessions/bin/main.re::\[@alert "-all--all+deprecated"\]=
+// For Dream]]
+#+BEGIN_SRC
+[@alert "-all--all+deprecated"];
+// For Dream
+#+END_SRC
+
+** Guest wifi login modal pages dont open because of DNS settings
+#+PROPERTY: PUBDATE 2024-05-12 Sun 12:40
+https://zapier.com/blog/open-wifi-login-page/
+
+Removing/reset alternate DNS addresses helps
+**  Caching incorrectly can lead to security bugs
+#+PROPERTY: PUBDATE 2024-05-12 Sun 06:45
+See https://bugzilla.redhat.com/show_bug.cgi?id=1990415
+
+TLDR; a directory path gets cached, then a malicious actor replaces
+the directory entry with a symlink with same name and violates
+security assumptions
+
+** uninterpreter extension =mel.obj=
+#+PROPERTY: PUBDATE 2024-05-05 Sun 09:14
+
+#+begin_quote
+File "server/server.re", line 40, characters 35-59:
+40 |           dangerouslySetInnerHTML={{"__html": globalStyles}}
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^
+#+end_quote
+
+Add =melange.ppx= in the dune file 
+
+** esy internals: given a path to npm package, how to know if it's a JS package or native
+#+PROPERTY: PUBDATE 2024-05-01 Wed 12:10
+
+#+BEGIN_SRC reason
+  /**
+
+     Figure if a package is JS or esy package
+
+     Context: Packages from NPM could contain, not just JS, but any natively compiled library.
+
+  */
+
+  let* packageJson = NpmPackageJson.ofDir(src);
+  switch (packageJson |> Option.bind(~f=NpmPackageJson.esy)) {
+  | Some(_) =>
+    let* () =
+      RunAsync.ofLwt @@
+      Esy_logs_lwt.debug(m =>
+	m(
+	  "NodeModuleLinker: skipping %a because it's package.json contains 'esy' field",
+	  Path.pp,
+	  src,
+	)
+      );
+    RunAsync.return();
+  | None => Fs.hardlinkPath(~src, ~dst)
+  };
+
+#+END_SRC
+
+*** Notes:
+
+   1. No easy way to turn a path to =InstallManifest.re= since seen in
+      =Solver.re= that seems to know if a package is esy or npmjs
+
+   2. childNode.source isn't useful as it only tells if a package is opam or not
+
+
+** esy internals: So source types have an additional opam field to tell if a package is from opam or not
+#+PROPERTY: PUBDATE 2024-05-01 Wed 09:50
+
+#+BEGIN_SRC js
+  "source": {
+    "type": "install",
+    "source": [
+      "archive:https://opam.ocaml.org/cache/sha256/59/59f2f1abbfc8a7ccbdbf608894e5c75e8a76006e34899254446f83e200dfb4f9#sha256:59f2f1abbfc8a7ccbdbf608894e5c75e8a76006e34899254446f83e200dfb4f9",
+      "archive:https://github.com/ocaml-community/yojson/releases/download/2.1.2/yojson-2.1.2.tbz#sha256:59f2f1abbfc8a7ccbdbf608894e5c75e8a76006e34899254446f83e200dfb4f9"
+    ],
+    "opam": {
+      "name": "yojson",
+      "version": "2.1.2",
+      "path": "esy.lock/opam/yojson.2.1.2"
+    }
+#+END_SRC
+
+Explains the following then,
+
+#+begin_src reason
+type t =
+  | Link({
+      path: DistPath.t,
+      manifest: option(ManifestSpec.t),
+      kind: Source.linkKind,
+    })
+  | Install({
+      source: (Dist.t, list(Dist.t)),
+      opam: option(opam),
+    })
+#+end_src
+
+and why =opam= is an option. It could be missing from solution file, =index.json=
+
+** esy internals: So OpamManifest.t is turned into InstallManifest.t
+#+PROPERTY: PUBDATE 2024-05-01 Wed 09:16
+
+#+BEGIN_SRC
+let toInstallManifest = (~source=?, ~name, ~version, manifest) => {
+#+END_SRC
+**   This is what I'm looking for
+#+PROPERTY: PUBDATE 2024-05-01 Wed 08:55
+
+I could use this to figure if  an NPIM package should be installed with no module linkers or not.
+=git:~/development/esy/esy/esy-solve/Solver.re::prometheansacrifice/pnpm-inspired-linker@{2024-05-01}::513=
+#+BEGIN_SRC reason
+    if (!Universe.mem(~pkg=manifest, universe^)) {
+      switch (manifest.kind) {
+      | InstallManifest.Esy =>
+        universe := Universe.add(~pkg=manifest, universe^);
+        let* dependencies =
+          RunAsync.ofRun(evalDependencies(solver, manifest));
+        let* () =
+          RunAsync.contextf(
+            addDependencies(dependencies),
+            "resolving %a",
+            InstallManifest.pp,
+            manifest,
+          );
+
+        universe := Universe.add(~pkg=manifest, universe^);
+        return();
+      | InstallManifest.Npm => return()
+      };
+    } else {
+      return();
+    }
+#+END_SRC
+** esy internals: How are =manifests= created in esy?
+#+PROPERTY: PUBDATE 2024-05-01 Wed 08:16
+
+I need them to figure if a package being installed from NPM is meant
+for node.js or esy Packages built with esy have esy field in them
+
+[2024-05-01 Wed]  =Dependencies.t= only tell if the package has npm
+formula (package.json) or opam (=.opam= file)
+#+BEGIN_SRC reason
+  and addDependencies = (dependencies: Dependencies.t) =>
+    switch (dependencies) {
+    | Dependencies.NpmFormula(reqs) =>
+      let f = (req: Req.t) => addDependency(req);
+      RunAsync.List.mapAndWait(~f, reqs);
+
+    | Dependencies.OpamFormula(_) =>
+      let f = (req: Req.t) => addDependency(req);
+      let reqs = Dependencies.toApproximateRequests(dependencies);
+      RunAsync.List.mapAndWait(~f, reqs);
+    }
+#+END_SRC
+
+** Github Actions: Not use "deploy from branch" but "Github actions" as source for github pages
+#+PROPERTY: PUBDATE 2024-04-24 Wed 16:02
+
+This is how I prevented the additional deployment
+(pages-build-and-deployment) which was expecting the repo to be jekyll
+**  GPT: Unused variables in common lisp
+#+PROPERTY: PUBDATE 2024-04-19 Fri
+
+[[./gpt-unused-variables-common-lisp.org]]
+
+** CMU's common lisp book
+#+PROPERTY: PUBDATE 2024-04-19 Fri
+
+[[./gpt-cmu-common-lisp-book.org]]
+
+**  Learning about conditional directives with GPT
+#+PROPERTY: PUBDATE 2024-04-19 Fri
+
+[[./gpt-common-lisp-learning-conditional-directives.org]]
+
+** Emacs eshell: because it's possible to mix bash with elisp
+#+PROPERTY: PUBDATE 2024-04-09 Tue 13:55
+
+https://www.howardism.org/Technical/Emacs/eshell-why.html
+
+** Interesting Emacs starter
+#+PROPERTY: PUBDATE 2024-04-09 Tue 07:13
+
+https://themagitian.github.io/posts/emacsconfig/
+
+** Google Cloud has a way to provide justification or reason for key access when keys are external
+#+PROPERTY: PUBDATE 2024-03-21 Thu 15:03
+
+https://cloud.google.com/assured-workloads/key-access-justifications/docs/overview
+
+** jujutsu: git compatible vcs
+#+PROPERTY: PUBDATE 2024-03-20 Wed 17:34
+
+https://v5.chriskrycho.com/essays/jj-init/
+https://www.youtube.com/watch?v=2otjrTzRfVk
+
+** prismic to create landing pages
+#+PROPERTY: PUBDATE 2024-03-19 Tue 16:43
+
+https://prismic.io/
+
+** Multidispatch in oop with commonlisp
+#+PROPERTY: PUBDATE 2024-03-11 Mon 12:53
+
+https://eli.thegreenplace.net/2016/a-polyglots-guide-to-multiple-dispatch-part-3/
+**   Loading addresses on arm64
+#+PROPERTY: PUBDATE 2024-03-01 Fri 18:48
+
+https://devblogs.microsoft.com/oldnewthing/20220809-00/?p=106955
+**   Heap memory doesn't use heap datastructures internally
+#+PROPERTY: PUBDATE 2024-02-27 Tue 08:50
+
+https://stackoverflow.com/questions/15314475/c-heap-organisation-which-data-structure?rq=3#:~:text=Here%20heap%20doesn't%20mean,global%2C%20static%20variables%20are%20stored.
+**  Summary: Generic programming in OCaml
+#+PROPERTY: PUBDATE 2024-02-22 Thu 17:41
+Ref: https://arxiv.org/pdf/1812.11665.pdf
+
+Introduces Generic programming in OCaml with,
+
+1. extensible variant based GADT
+2. Records as a workaround to implement extension functions
+3. Hashtable trick to make avoid order of declaration problem
+4. Workaround for higher kinded types
+
+Rest of the paper introduced strategies for Generic Views and type
+indexed functions.
+
+After that, it mentioned reimplementations of Haskell libraries
+Uniplate, multiplate etc and using them to solve the original binary
+tree traversal with generics. Also discusses effectful computations
+**   Everytime you ask a user to click, you lose them - Andrew Chen
+#+PROPERTY: PUBDATE 2024-02-08 Thu 16:22
+
+https://twitter.com/andrewchen/status/1753088523933282564
+**   Google's in-house writer on how to write with AI
+#+PROPERTY: PUBDATE 2024-02-08 Thu 15:54
+
+https://twitter.com/david_perell/status/1755301204903760288
+**   Low level understanding of ios applications
+#+PROPERTY: PUBDATE 2024-02-08 Thu 15:53
+
+https://github.com/qyang-nj/llios
+**  Understanding how ios apps are built without Xcode
+#+PROPERTY: PUBDATE 2024-02-08 Thu 15:52
+
+https://github.com/airbnb/BuckSample
+
+**   multishot continuations in ocaml
+#+PROPERTY: PUBDATE 2024-02-06 Tue 08:09
+https://github.com/dhil/ocaml-multicont
+https://github.com/kayceesrk/delimcc_of_fxhandler
+**   Stopping all docker containers with one command
+#+PROPERTY: PUBDATE 2024-01-08 Mon 18:21
+#+BEGIN_SRC sh
+  docker container stop $(docker ps -a -q)
+#+END_SRC
+**  While creating a hello world cargo/rust program with esy I ran into linker errors
+#+PROPERTY: PUBDATE 2024-01-02 Tue
+
+#+begin_src
+  = note: ld: multiple errors: archive member 'lib.rmeta' not a mach-o file in '/Users/manas/.esy/3__________________________________________________________________/i/esy_rustup-29f35d7f/.rustup/toolchains/1.52-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib/libpanic_unwind-b9303f5dcd4c8d61.rlib'; archive member 'lib.rmeta' not a mach-o file in '/Users/manas/.esy/3__________________________________________________________________/i/esy_rustup-29f35d7f/.rustup/toolchains/1.52-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib/libaddr2line-074193e7ccb12f2d.rlib'; archive member 'lib.rmeta' not a mach-o file in '/Users/manas/.esy/3__________________________________________________________________/i/esy_rustup-29f35d7f/.rustup/toolchains/1.52-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib/librustc_demangle-592dc2260cf64a27.rlib'; archive member 'lib.rmeta' not a mach-o file in '/Users/manas/.esy/3__________________________________________________________________/i/esy_rustup-29f35d7f/.rustup/toolchains/1.52-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib/libhashbrown-95abce77d407cda5.rlib'; archive member 'lib.rmeta' not a mach-o file in '/Users/manas/.esy/3__________________________________________________________________/i/esy_rustup-29f35d7f/.rustup/toolchains/1.52-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib/librustc_std_workspace_alloc-6d0f3b01c36286cc.rlib'; archive member 'lib.rmeta' not a mach-o file in '/Users/manas/.esy/3__________________________________________________________________/i/esy_rustup-29f35d7f/.rustup/toolchains/1.52-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib/libcfg_if-e33a663a2dcce97d.rlib'; archive member 'lib.rmeta' not a mach-o file in '/Users/manas/.esy/3__________________________________________________________________/i/esy_rustup-29f35d7f/.rustup/toolchains/1.52-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib/libobject-ae5454bb02d34cb7.rlib'; archive member 'lib.rmeta' not a mach-o file in '/Users/manas/.esy/3__________________________________________________________________/i/esy_rustup-29f35d7f/.rustup/toolchains/1.52-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib/libunwind-07ad8f4801703872.rlib'; archive member 'lib.rmeta' not a mach-o file in '/Users/manas/.esy/3__________________________________________________________________/i/esy_rustup-29f35d7f/.rustup/toolchains/1.52-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib/liblibc-d02e2e94e82428e3.rlib'; archive member 'lib.rmeta' not a mach-o file in '/Users/manas/.esy/3__________________________________________________________________/i/esy_rustup-29f35d7f/.rustup/toolchains/1.52-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib/libgimli-ba7e4c687a24d092.rlib'; archive member 'lib.rmeta' not a mach-o file in '/Users/manas/.esy/3__________________________________________________________________/i/esy_rustup-29f35d7f/.rustup/toolchains/1.52-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib/librustc_std_workspace_core-f2cc3399f2e93551.rlib'; archive member 'lib.rmeta' not a mach-o file in '/Users/manas/.esy/3__________________________________________________________________/i/esy_rustup-29f35d7f/.rustup/toolchains/1.52-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib/liballoc-9911d63dc36d4937.rlib'; archive member 'lib.rmeta' not a mach-o file in '/Users/manas/.esy/3__________________________________________________________________/i/esy_rustup-29f35d7f/.rustup/toolchains/1.52-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib/libstd-a77d2ee571f558e4.rlib'; archive member 'lib.rmeta' not a mach-o file in '/Users/manas/.esy/3__________________________________________________________________/i/esy_rustup-29f35d7f/.rustup/toolchains/1.52-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib/libcompiler_builtins-d8b74547953a18ba.rlib'; archive member 'lib.rmeta' not a mach-o file in '/Users/manas/.esy/3__________________________________________________________________/i/esy_rustup-29f35d7f/.rustup/toolchains/1.52-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib/libcore-e12e04ef43bf5ffa.rlib'
+  clang: error: linker command failed with exit code 1 (use -v to see invocation)
+#+end_src
+
+It was because Rust edition was =2018= Upgrading to =2021= with the
+=esy-rustup@1.56= (unpublished to npm) fixed the issue. I used the
+following resolution.
+
+#+begin_src js
+{
+  "resolutions": {
+    "esy-rustup": "esy-packages/esy-rustup:esy.json#16c0801743a43f86d13f228ff0b2167015ffd2af"
+  }
+}
+#+end_src
+
+
+**  ComSpec on Windows must always use backslashes.
+#+PROPERTY: PUBDATE 2023-12-20 Wed 09:05
+
+Fwd slashes and back slashes are interchangeable is a myth
+
+https://github.com/esy/esy/commit/0e956cabd682ae9fd0f6f38c053fb220a86f92d9
+
+Fixes broken system() from CRT
+
+Error message: The syntax of the command is incorrect.
+
+With recent commit replacing \ to / in the exported environment,
+COMSPEC has / instead of \, which breaks system/wsystem stdlib
+functions, which breaks OCaml's Sys.command. This, for instance,
+breaks compiler's -pp argument which calls external commands with
+Sys.command
+
+This is why we see the gawk command failing on CI and noticed none of
+the reason programs compiling because compile shells out with
+Sys.command with -pp argument
+
+**   There's an RFC to control increased centralisation of internet
+#+PROPERTY: PUBDATE 2023-12-19 Tue 19:59
+https://www.rfc-editor.org/rfc/rfc9518.html
+
+**   Classical Hindley-Milner type system cannot directly work with GADTs
+#+PROPERTY: PUBDATE 2023-12-06 Wed 16:54
+:PROPERTIES:
+
+:PUBDATE:  2023-12-06 Wed 16:56
+:END:
+
+From [[https://arxiv.org/pdf/1812.11665.pdf][Generic Programming in OCaml]]
+#+begin_quote
+To implement show we need another extension to OCAML type system introduced in version 4.00:
+locally abstract types. This type annotation is necessary to help the type checker while pattern matching
+over a GADT, since the type indices of a GADT may be instantiated to different concrete types depending
+on the constructor case, which is not possible with the classical Hindley-Milner algorithm
+#+end_quote
+**   There is a tool to extract meta information from react components
+#+PROPERTY: PUBDATE 2023-11-30 Thu 19:11
+
+See [[https://react-docgen.dev/playground][react-docgen]]
+**   Converting HEIC files to JPG on macos
+#+PROPERTY: PUBDATE 2023-11-23 Thu 06:59
+
+#+BEGIN_SRC sh
+magick mogrify -monitor -format jpg *.HEIC
+#+END_SRC
+
+https://apple.stackexchange.com/questions/297134/how-to-convert-a-heif-heic-image-to-jpeg-in-macos/410920#410920
+**   I like how Meta as a company posts on Engineering reddit
+#+PROPERTY: PUBDATE 2023-11-18 Sat 15:30
+
+https://www.reddit.com/r/rust/comments/136qs44/hello_rrust_we_are_meta_engineers_who_created_the/
+**   OCaml 5.2.0 will make a change wrt how function expressions are represented
+#+PROPERTY: PUBDATE 2023-11-13 Mon 17:39
+
+OCaml 5.1.0 has two different helper APIs to create a function
+expression AST
+
+#+begin_src tuareg
+val fun_: ?loc:loc -> ?attrs:attrs -> arg_label -> expression option
+          -> pattern -> expression -> expression
+val function_: ?loc:loc -> ?attrs:attrs -> case list -> expression
+#+end_src
+
+
+[[https://github.com/ocaml/ocaml/blob/5717a14d0e3dc2b0e41ab94b82977d5761f70ea2/parsing/ast_helper.mli#L138-L140][ref]]
+
+
+With [[https://github.com/ocaml/ocaml/pull/12236][this PR]], specifically [[https://github.com/ocaml/ocaml/commit/739f574cd1bbda3489809e25949c4cd1c262d407][this commit]], these helpers have been merged
+into one - =function_=
+
+#+begin_src tuareg
+  val function_ : ?loc:loc -> ?attrs:attrs -> function_param list
+		 -> type_constraint option -> function_body
+		 -> expression
+#+end_src
+
+This helper needs the following types
+
+#+begin_src tuareg
+and function_param = { pparam_loc : Location.t;
+    pparam_desc : function_param_desc;
+  }
+and function_param_desc =
+  | Pparam_val of arg_label * expression option * pattern
+
+and type_constraint =
+  | Pconstraint of core_type
+  | Pcoerce of core_type option * core_type
+and function_body =
+  | Pfunction_body of expression
+  | Pfunction_cases of case list * Location.t * attributes
+#+end_src
+
+An example illustrating usage of the new API, comparing with the old
+would look like this.
+
+#+begin_src diff
+@@ -358,11 +372,28 @@ let check_phrase phrase =
+           let open Ast_helper in
+           with_default_loc loc
+             (fun () ->
++#if OCAML_VERSION >= (5, 2, 0)
++              let function_params = [ { pparam_loc = loc; pparam_desc = Pparam_val (Nolabel, None, (Pat.construct unit None)) } ] in
++              Str.eval
++                (Exp.function_
++                  ~loc
++                  ~attrs:[] 
++                   function_params
++                   None
++                   (Pfunction_body (Exp.letmodule
++                                     ~attrs:[]
++                                     ~loc
++                                     (with_loc loc (Some "_"))
++                                     (Mod.structure (item :: items))
++                                     (Exp.construct unit None))))
++#else
+                Str.eval
+                  (Exp.fun_ Nolabel None (Pat.construct unit None)
+                    (Exp.letmodule (with_loc loc (Some "_"))
+                       (Mod.structure (item :: items))
+-                      (Exp.construct unit None))))
++                      (Exp.construct unit None)))
++#endif
++            )
+         in
+         let check_phrase = Ptop_def [top_def] in
+         try
+#+end_src
+
+Ref: https://github.com/ocaml-community/utop/compare/master...DiningPhilosophersCo:utop:prometheansacrifice%40ocaml-5-2.patch
+
+**  Trunk OCaml compiler usually has bad tooling supports
+#+PROPERTY: PUBDATE 2023-11-13 Mon 15:33
+
+I was working with a fork of OCaml compiler on the utop source tree
+and noticed =merlin-libs= doesn't  compile. Not surprising.
+
+Just a reminder that working with OCaml trunk means not tooling :(
+#+BEGIN_SRC js
+    "devDependencies": {
+      "@opam/ocaml-lsp-server": "*",
+      "@opam/ocamlformat": "*"
+    },
+#+END_SRC
+
+#+begin_src 
+    (cd _build/default && /Users/manas/.esy/3__________________________________________________________________/i/ocaml-1844970f/bin/ocamlc.opt -w -40 -g -bin-annot -I src/config/.merlin_config.objs/byte -no-alias-deps -o src/config/.merlin_config.objs/byte/merlin_config.cmo -c -impl src/config/merlin_config.ml)
+    File "src/config/merlin_config.ml", line 8, characters 54-66:
+    8 |   | `OCaml_4_14_0 | `OCaml_5_0_0  | `OCaml_5_1_0  ] = `OCaml_5_2_0
+                                                              ^^^^^^^^^^^^
+    Error: This expression has type "[> `OCaml_5_2_0 ]"
+           but an expression was expected of type
+             "[ `OCaml_4_02_0
+             | `OCaml_4_02_1
+             | `OCaml_4_02_2
+             | `OCaml_4_02_3
+             | `OCaml_4_03_0
+             | `OCaml_4_04_0
+             | `OCaml_4_05_0
+             | `OCaml_4_06_0
+             | `OCaml_4_07_0
+             | `OCaml_4_07_1
+             | `OCaml_4_08_0
+             | `OCaml_4_09_0
+             | `OCaml_4_10_0
+             | `OCaml_4_11_0
+             | `OCaml_4_12_0
+             | `OCaml_4_13_0
+             | `OCaml_4_14_0
+             | `OCaml_5_0_0
+             | `OCaml_5_1_0 ]"
+           The second variant type does not allow tag(s) "`OCaml_5_2_0"
+    error: command failed: 'dune' 'build' '-p' 'merlin-lib' '-j' '4' (exited with 1)
+    esy-build-package: exiting with errors above...
+#+end_src
+
+** Command to compiler a single Reason file without Dune - ie. with just the compiler
+#+PROPERTY: PUBDATE 2023-11-12 Sun 17:40
+
+#+BEGIN_SRC sh
+ocamlopt -verbose -pp 'refmt --print binary' -impl hello.re -o hello-reason
+#+END_SRC
+** ocaml - the toplevel command - doesn't have a -pp option
+#+PROPERTY: PUBDATE 2023-11-12 Sun 17:38
+
+#+BEGIN_SRC sh
+$ esy ocaml -pp 'refmt --print binary'
+ocaml: unknown option '-pp'.
+Usage: ocaml <options> <files>
+Try 'ocaml --help' for more information.#+END_SRC
+#+END_SRC
+
+#+RESULTS:
+
+This means, it's not possible to run Reason expressions off the ocaml
+toplevel. I can see why they'd just add support for utop - a new
+toplevel has to be written for Reason anyways, and while at it, why
+not pick the one with better CLI experience.
+
+** Opinion I agree with
+#+PROPERTY: PUBDATE 2023-11-10 Fri 17:42
+
+https://twitter.com/jordwalke/status/1722918836499103865
+
+** Path resolution of a command can fail if the executable bit is unset
+#+PROPERTY: PUBDATE 2023-11-10 Fri 16:42
+
+When working with =esy release= of a project that is just a bash
+script, path resolution kept failing even if the script was on =$PATH=
+
+Reason: it didn't have executable bit set on it's file permissions
+
+** Edebug can be used to instrument elisp. And likely, to figure how undocumented elisp code works
+#+PROPERTY: PUBDATE 2023-11-10 Fri 09:48
+
+[[https://www.gnu.org/software/emacs/manual/html_node/elisp/Using-Edebug.html][ref]]
+
+Using =edebug= to figure how to write an =org-babel= language backend
+was [[https://orgmode.org/worg/org-contrib/babel/languages/index.html][suggested]] in the docs for =org-babel=
+
+** Script to repeatedly run rtop and find missing runtime opam dependency and add it to esy.json
+#+PROPERTY: PUBDATE 2023-11-09 Thu 22:52
+:PROPERTIES:
+
+:PUBDATE:  2023-11-09 Thu 22:53
+:END:
+#+BEGIN_SRC sh
+# Hacky script to find missing opam dep and add it to esy.json
+
+MISSING_PACKAGE="start" # Just a starting value to get the loop started
+while [ ! -z "$MISSING_PACKAGE" ]
+do
+    npm r -g @prometheansacrifice/reason-cli; rm -rf _release && esy npm-release && cd _release && npm pack && npm i -g ./prometheansacrifice-reason-cli-0.0.0.tgz --force  && cd ../
+
+    MISSING_PACKAGE=$(rtop 2>&1  | grep -o -E '"([^"]+)"' | grep -v required | sed 's/"//g')
+
+    QUERY=".esy.release.includePackages += [\"@opam/$MISSING_PACKAGE\"]"
+    jq "$QUERY" esy.json > esy.json.tmp
+    mv esy.json.tmp esy.json
+done
+
+echo Done
+#+END_SRC
+**   HTTP 303 redirect
+#+PROPERTY: PUBDATE 2023-11-09 Thu 10:11
+
+https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/303
+
+For redirects that dont link to the resource, but to another
+interstitial, say a paywall/auth etc
+
+** Constant binary expressions in JS are usually unintentional and can be avoided
+#+PROPERTY: PUBDATE 2023-11-09 Thu 10:01
+
+https://jordaneldredge.com/blog/interesting-bugs-caught-by-eslints-no-constant-binary-expression/
+
+It seems developers rarely write constant binary expressions and when
+they do it's unintentional bugs. This article lists possible bugs with
+real world examples that end-up being unintentional binary expressions
+
+** Go runtime is not aware of the CPU limits set on the docker container 
+#+PROPERTY: PUBDATE 2023-11-08 Wed 11:10
+
+Reading this [[https://www.riverphillips.dev/blog/go-cfs/][article]] made me realise docker may not necessarily
+respect =--cpu=
+
+#+begin_src bash
+docker run --cpus=4 -p 8080:8080 $(ko build -L main.go)
+#+end_src
+
+
+This is because GO runtime is still unaware of this setting and it's GC would still employ all the CPU cores.
+
+To address this, add environment variable, =GOMAXPROCS= to the =run= command.
+
+#+begin_src sh
+docker run --cpus=4 -e GOMAXPROCS=4 -p 8080:8080 $(ko build -L main.go)
+#+end_src
+
+
+** The new -I +str while using ocamlopt with ocaml 5
+#+PROPERTY: PUBDATE 2023-11-07 Tue 17:33
+
+I kept getting,
+
+#+begin_src 
+ocamlopt -c fs.cmx esy_installer.mli esy_installer.ml # only dependencies newer than target need to be built
+File "_none_", line 1:                                                                                                                                        
+Alert ocaml_deprecated_auto_include:                                                                                                                          
+OCaml's lib directory layout changed in 5.0. The str subdirectory has been                                                                                    
+automatically added to the search path, but you should add -I +str to the                                                                                     
+command-line to silence this alert (e.g. by adding str to the list of                                                                                         libraries in your dune file, or adding use_str to your _tags file for                                                                                         
+ocamlbuild, or using -package str for ocamlfind).                                                                                                             
+#+end_src
+
+Following the advice fixes it. Below is an example.
+
+#+BEGIN_SRC
+esy_installer.$(OCAML_OBJECT_EXT): fs.$(OCAML_OBJECT_EXT) esy_installer.mli esy_installer.ml
+        $(OCAML_COMPILER) -c -I +str $? # only dependencies newer than target need to be built
+#+END_SRC
+** Example of how order of cmo files matter when compiling with ocamlopt
+#+PROPERTY: PUBDATE 2023-11-07 Tue 17:10
+
+Before,
+#+BEGIN_SRC makefile
+OCAML_OBJECTS = src/lexer.$(OCAML_OBJECT_EXT) src/parser.$(OCAML_OBJECT_EXT) src/esy_installer.$(OCAML_OBJECT_EXT) src/fs.$(OCAML_OBJECT_EXT)
+#+END_SRC
+
+Error
+#+begin_src 
+File "_none_", line 1:
+Error: No implementations provided for the following modules:
+         Fs referenced from src/esy_installer.cmx
+make: ***  Error 2
+#+PROPERTY: PUBDATE esy-installer
+#+end_src
+
+After,
+#+begin_src makefile
+  OCAML_OBJECTS = src/lexer.$(OCAML_OBJECT_EXT) src/parser.$(OCAML_OBJECT_EXT) src/fs.$(OCAML_OBJECT_EXT) src/esy_installer.$(OCAML_OBJECT_EXT)
+#+end_src
+
+** Compiling an OCaml module from another directory with ocamlopt
+#+PROPERTY: PUBDATE 2023-11-07 Tue 16:08
+
+I was working on [[https://github.com/ManasJayanth/esy-boot-installer][esy-boot-installer]] and wanted to write a test,
+=fs_test.ml= that depends on a module in =src/=
+
+I kept running into the following
+
+#+BEGIN_SRC
+ocamlopt -c fs.cmx fs_test.ml                                                                                                                                 
+File "fs_test.ml", line 2, characters 2-11:                                                                                                                   
+2 |   Fs.mkdirp "./foo/bar";
+Error: Unbound module Fs                                                       
+#+END_SRC
+
+
+Despite providing the module =cmx=, the compiler couldn't compile
+=fs_test.ml= because it was missing the interface file =cmi= To fix
+it, I had to add =-I ../src=
+
+#+begin_src makefile
+fs_test.$(OCAML_OBJECT_EXT): ../src/fs.$(OCAML_OBJECT_EXT) fs_test.ml 
+	$(OCAML_COMPILER) -I ../src -c $^
+#+end_src
